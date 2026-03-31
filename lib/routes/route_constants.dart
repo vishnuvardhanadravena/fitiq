@@ -7,7 +7,7 @@ class RouteList {
   /// Auth
   static const String login = '/login';
   static const String otp = '/otp';
-  static const String signup = '/signup';
+  static const String signup = '/register';
   static const String forgotPassword = '/forgot_password';
 
   /// Onboarding

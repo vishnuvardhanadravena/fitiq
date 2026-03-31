@@ -1,19 +1,21 @@
 import 'package:fitiq/core/constants/app_assets.dart';
+import 'package:fitiq/core/providers/shared_prefs_provider.dart';
 import 'package:fitiq/core/theame/app_colors.dart';
 import 'package:fitiq/core/theame/app_text_styles.dart';
 import 'package:fitiq/routes/route_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenState extends ConsumerState<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _logoController;
   late AnimationController _textController;
@@ -94,9 +96,21 @@ class _SplashScreenState extends State<SplashScreen>
     await _taglineController.forward();
 
     await Future.delayed(const Duration(milliseconds: 800));
-    if (mounted) {
+
+    if (!mounted) return;
+
+    final storage = ref.read(secureStorageProvider);
+    final prefs = ref.read(sharedPrefsProvider);
+
+    final token = await storage.readString('token');
+    final isFirstTime = prefs.getBool('isFirstTime') ?? true;
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    if (isFirstTime) {
       context.go(RouteList.onboarding);
-      // Navigator.pushReplacementNamed(context, '/home');
+    } else if (token != null && token.isNotEmpty && isLoggedIn == true) {
+      context.go(RouteList.home);
+    } else {
+      context.go(RouteList.login);
     }
   }
 

@@ -1,9 +1,10 @@
-import 'dart:math';
-
 import 'package:fitiq/routes/route_constants.dart';
+import 'package:fitiq/views/auth/Screens/forgot_password.dart';
 import 'package:fitiq/views/auth/Screens/landing_pages.dart';
 import 'package:fitiq/views/auth/Screens/login_screen.dart';
-import 'package:fitiq/views/auth/splash_screen.dart';
+import 'package:fitiq/views/auth/Screens/signup_screen.dart';
+import 'package:fitiq/views/auth/Screens/splash_screen.dart';
+import 'package:fitiq/views/dashborad/dashboardScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,38 +12,70 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 final GoRouter appRouter = GoRouter(
   initialLocation: RouteList.splash,
   navigatorKey: rootNavigatorKey,
+  // errorBuilder: (context, state) {
+  //   final error = state.error;
+
+  //   AppLogger.error(
+  //     "GoRouter Error",
+  //     error: error,
+  //     // stackTrace: error is Error ? error.toString() : null,
+  //   );
+
+  //   return const UnknownRouteScreen();
+  // },
+  // redirect: (context, state) {
+  //   final container = ProviderScope.containerOf(context);
+
+  //   final storage = container.read(secureStorageProvider);
+  //   final prefs = container.read(sharedPrefsProvider);
+  //   final isFirstTime = prefs.getBool('isFirstTime') ?? true;
+  //   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+  //   final isGoingToLogin = state.matchedLocation == RouteList.login;
+  //   final isGoingToOnboarding = state.matchedLocation == RouteList.onboarding;
+
+  //   if (isFirstTime && !isGoingToOnboarding) {
+  //     return RouteList.onboarding;
+  //   }
+
+  //   if (!isLoggedIn && !isGoingToLogin) {
+  //     return RouteList.login;
+  //   }
+
+  //   return null; // allow navigation
+  // },
   routes: [
     GoRoute(
       path: RouteList.splash,
       name: RouteList.splash,
       builder: (context, state) => const SplashScreen(),
     ),
-    // GoRoute(
-    //   path: RouteList.signup,
-    //   name: RouteList.signup,
-    //   builder: (context, state) => const SignUpScreen(),
-    // ),
-     GoRoute(
+    GoRoute(
+      path: RouteList.signup,
+      name: RouteList.signup,
+      builder: (context, state) => const SignupScreen(),
+    ),
+    GoRoute(
       path: RouteList.login,
       name: RouteList.login,
-      builder: (context, state) => const LoginScreen(),
+      builder: (context, state) => const FitiqSignInScreen(),
     ),
     GoRoute(
       path: RouteList.onboarding,
       name: RouteList.onboarding,
       builder: (context, state) => const OnboardingScreen(),
     ),
-   
+
     // ShellRoute(
     //   builder: (context, state, child) {
     //     return MainNavBarScreen(child: child);
     //   },
     //   routes: [
-    //     GoRoute(
-    //       path: RouteList.home,
-    //       name: RouteList.home,
-    //       builder: (context, state) => const HomeScreen(),
-    //     ),
+        GoRoute(
+          path: RouteList.home,
+          name: RouteList.home,
+          builder: (context, state) => const DashboardScreen(),
+        ),
     //     GoRoute(
     //       path: RouteList.search,
     //       name: RouteList.search,
@@ -74,11 +107,11 @@ final GoRouter appRouter = GoRouter(
     //     return Otpverifyscreen(phone: phone, type: type, otp: otp);
     //   },
     // ),
-    // GoRoute(
-    //   path: RouteList.forgotPassword,
-    //   name: RouteList.forgotPassword,
-    //   builder: (context, state) => const Forgotpassword(),
-    // ),
+    GoRoute(
+      path: RouteList.forgotPassword,
+      name: RouteList.forgotPassword,
+      builder: (context, state) => const ForgotPassword(),
+    ),
     // GoRoute(
     //   path: RouteList.changePassword,
     //   name: RouteList.changePassword,
@@ -89,7 +122,7 @@ final GoRouter appRouter = GoRouter(
     //   name: RouteList.editProfile,
     //   builder: (context, state) => const EditProfileScreen(),
     // ),
-   
+
     // GoRoute(
     //   path: RouteList.rooms,
     //   name: RouteList.rooms,
@@ -101,10 +134,6 @@ final GoRouter appRouter = GoRouter(
     //     return RoomsScreen(acommodation: args.acommodation);
     //   },
     // ),
-  
-  
-  
-
 
     // GoRoute(
     //   path: RouteList.paymentsuccess,
@@ -144,10 +173,7 @@ final GoRouter appRouter = GoRouter(
     //     );
     //   },
     // ),
-    
-   
 
-    
     // GoRoute(
     //   path: RouteList.contactus,
     //   name: RouteList.contactus,

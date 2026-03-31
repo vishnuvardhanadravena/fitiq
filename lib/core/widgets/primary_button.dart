@@ -200,7 +200,7 @@ class _AppButtonState extends State<AppButton>
               ),
           shadow: [
             BoxShadow(
-              color: _primaryColor.withOpacity(0.4),
+              color: _primaryColor.withValues(alpha: 0.4),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -303,22 +303,24 @@ class _AppButtonState extends State<AppButton>
         onTapUp: _onTapUp,
         onTapCancel: _onTapCancel,
         onTap: _isInteractable ? widget.onPressed : null,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          width: widget.isFullWidth ? double.infinity : widget.width,
-          height: widget.height ?? sc.height,
-          padding: widget.padding ??
-              EdgeInsets.symmetric(horizontal: sc.horizontalPadding),
-          decoration: BoxDecoration(
-            color: effectiveGradient == null ? effectiveBg : null,
-            gradient: effectiveGradient,
-            borderRadius: _borderRadius,
-            border: effectiveBorder != Colors.transparent
-                ? Border.all(color: effectiveBorder, width: 1.5)
-                : null,
-            boxShadow: _isPressed ? [] : effectiveShadow,
+        child: IntrinsicWidth(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            width: widget.isFullWidth ? double.infinity : widget.width,
+            height: widget.height ?? sc.height,
+            padding: widget.padding ??
+                EdgeInsets.symmetric(horizontal: sc.horizontalPadding),
+            decoration: BoxDecoration(
+              color: effectiveGradient == null ? effectiveBg : null,
+              gradient: effectiveGradient,
+              borderRadius: _borderRadius,
+              border: effectiveBorder != Colors.transparent
+                  ? Border.all(color: effectiveBorder, width: 1.5)
+                  : null,
+              boxShadow: _isPressed ? [] : effectiveShadow,
+            ),
+            child: buttonChild,
           ),
-          child: buttonChild,
         ),
       ),
     );
