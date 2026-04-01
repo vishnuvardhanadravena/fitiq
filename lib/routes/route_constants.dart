@@ -15,7 +15,7 @@ class RouteList {
 
   /// Dashboard Tabs (ShellRoute)
   static const String home = '/home';
-  static const String search = '/search';
+  static const String planDetails = '/plan_details';
   static const String bookings = '/bookings';
   static const String profile = '/profile';
 

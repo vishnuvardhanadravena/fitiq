@@ -1,10 +1,14 @@
+import 'dart:math';
+
 import 'package:fitiq/routes/route_constants.dart';
 import 'package:fitiq/views/auth/Screens/forgot_password.dart';
 import 'package:fitiq/views/auth/Screens/landing_pages.dart';
 import 'package:fitiq/views/auth/Screens/login_screen.dart';
 import 'package:fitiq/views/auth/Screens/signup_screen.dart';
 import 'package:fitiq/views/auth/Screens/splash_screen.dart';
-import 'package:fitiq/views/dashborad/dashboardScreen.dart';
+import 'package:fitiq/views/dashborad/dashboard_screen.dart';
+import 'package:fitiq/views/plans/screens/payment_sucesess.dart';
+import 'package:fitiq/views/plans/screens/plan_detailes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -71,16 +75,20 @@ final GoRouter appRouter = GoRouter(
     //     return MainNavBarScreen(child: child);
     //   },
     //   routes: [
-        GoRoute(
-          path: RouteList.home,
-          name: RouteList.home,
-          builder: (context, state) => const DashboardScreen(),
-        ),
-    //     GoRoute(
-    //       path: RouteList.search,
-    //       name: RouteList.search,
-    //       builder: (context, state) => const SearchScreen(),
-    //     ),
+    GoRoute(
+      path: RouteList.home,
+      name: RouteList.home,
+      builder: (context, state) => const DashboardScreen(),
+    ),
+    GoRoute(
+      path: RouteList.planDetails,
+      name: RouteList.planDetails,
+      builder: (context, state) {
+        final data = state.extra as Map<String, dynamic>;
+        final planId = data["planId"] as String;
+        return FitnessPlanDetailScreen(planId: planId);
+      },
+    ),
 
     //     GoRoute(
     //       path: RouteList.bookings,
@@ -112,6 +120,7 @@ final GoRouter appRouter = GoRouter(
       name: RouteList.forgotPassword,
       builder: (context, state) => const ForgotPassword(),
     ),
+
     // GoRoute(
     //   path: RouteList.changePassword,
     //   name: RouteList.changePassword,
@@ -134,45 +143,44 @@ final GoRouter appRouter = GoRouter(
     //     return RoomsScreen(acommodation: args.acommodation);
     //   },
     // ),
+    GoRoute(
+      path: RouteList.paymentsuccess,
+      name: RouteList.paymentsuccess,
+      pageBuilder: (context, state) {
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: const EnrollmentSuccessScreen(),
+          transitionDuration: const Duration(milliseconds: 1000),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return AnimatedBuilder(
+              animation: animation,
+              builder: (context, _) {
+                final size = MediaQuery.of(context).size;
 
-    // GoRoute(
-    //   path: RouteList.paymentsuccess,
-    //   name: RouteList.paymentsuccess,
-    //   pageBuilder: (context, state) {
-    //     return CustomTransitionPage(
-    //       key: state.pageKey,
-    //       child: const PaymentSuccessScreen(),
-    //       transitionDuration: const Duration(milliseconds: 400),
-    //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-    //         return AnimatedBuilder(
-    //           animation: animation,
-    //           builder: (context, _) {
-    //             final size = MediaQuery.of(context).size;
+                final maxRadius = sqrt(
+                  (size.width * size.width) + (size.height * size.height),
+                );
 
-    //             final maxRadius = sqrt(
-    //               (size.width * size.width) + (size.height * size.height),
-    //             );
+                final radius =
+                    CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeInOut,
+                    ).value *
+                    maxRadius;
 
-    //             final radius =
-    //                 CurvedAnimation(
-    //                   parent: animation,
-    //                   curve: Curves.easeInOut,
-    //                 ).value *
-    //                 maxRadius;
-
-    //             return ClipPath(
-    //               clipper: _CircularRevealClipper(
-    //                 radius: radius,
-    //                 center: Offset(size.width / 2, size.height / 2),
-    //               ),
-    //               child: child,
-    //             );
-    //           },
-    //         );
-    //       },
-    //     );
-    //   },
-    // ),
+                return ClipPath(
+                  clipper: _CircularRevealClipper(
+                    radius: radius,
+                    center: Offset(size.width / 2, size.height / 2),
+                  ),
+                  child: child,
+                );
+              },
+            );
+          },
+        );
+      },
+    ),
 
     // GoRoute(
     //   path: RouteList.contactus,
@@ -196,18 +204,18 @@ final GoRouter appRouter = GoRouter(
 //   RoomsArgs({required this.rooms, required this.acommodation});
 // }
 
-// class _CircularRevealClipper extends CustomClipper<Path> {
-//   final double radius;
-//   final Offset center;
+class _CircularRevealClipper extends CustomClipper<Path> {
+  final double radius;
+  final Offset center;
 
-//   _CircularRevealClipper({required this.radius, required this.center});
+  _CircularRevealClipper({required this.radius, required this.center});
 
-//   @override
-//   Path getClip(Size size) {
-//     return Path()..addOval(Rect.fromCircle(center: center, radius: radius));
-//   }
+  @override
+  Path getClip(Size size) {
+    return Path()..addOval(Rect.fromCircle(center: center, radius: radius));
+  }
 
-//   @override
-//   bool shouldReclip(_CircularRevealClipper old) =>
-//       old.radius != radius || old.center != center;
-// }
+  @override
+  bool shouldReclip(_CircularRevealClipper old) =>
+      old.radius != radius || old.center != center;
+}

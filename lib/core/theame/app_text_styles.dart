@@ -7,6 +7,7 @@ class AppTextStyles {
 
   static TextStyle heading = TextStyle(
     fontSize: 24.sp,
+    fontFamily: "Oswald", 
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
   );
@@ -42,6 +43,13 @@ class AppTextStyles {
   /// Section / card heading  e.g. "Today's Workout"
   static TextStyle headingMedium = TextStyle(
     fontSize: 20.sp,
+    fontFamily: "Oswald",
+    fontWeight: FontWeight.w700,
+    color: AppColors.textDark,
+  );
+  static TextStyle headingSmall = TextStyle(
+    fontSize: 14.sp,
+    fontFamily: "Oswald",
     fontWeight: FontWeight.w700,
     color: AppColors.textDark,
   );
@@ -75,6 +83,13 @@ class AppTextStyles {
   static TextStyle caption = TextStyle(
     fontSize: 12.sp,
     fontWeight: FontWeight.w400,
+    fontFamily: "Lato",
+    color: AppColors.textMuted,
+  );
+  static TextStyle text = TextStyle(
+    fontSize: 10.sp,
+    fontWeight: FontWeight.w400,
+    fontFamily: "Lato",
     color: AppColors.textMuted,
   );
 
@@ -82,6 +97,7 @@ class AppTextStyles {
   static TextStyle link = TextStyle(
     fontSize: 13.sp,
     fontWeight: FontWeight.w600,
+    fontFamily: "Lato",
     color: AppColors.linkColor,
     // decoration: TextDecoration.underline,
   );
@@ -91,11 +107,13 @@ class AppTextStyles {
     fontSize: 16.sp,
     fontWeight: FontWeight.w700,
     color: Colors.white,
+    fontFamily: "Lato",
     letterSpacing: 0.5,
   );
   static const TextStyle buttonTextStyle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w700,
+    fontFamily: "Lato",
     color: Colors.white,
     letterSpacing: 0.5,
   );

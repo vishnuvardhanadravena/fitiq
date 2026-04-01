@@ -2,11 +2,10 @@ import 'package:fitiq/views/dashborad/provider/dashbordprovider.dart';
 import 'package:fitiq/views/dashborad/screens/home_screen.dart';
 import 'package:fitiq/views/dashborad/screens/profile_screen.dart';
 import 'package:fitiq/views/dashborad/screens/programs_screen.dart';
-import 'package:fitiq/views/dashborad/screens/schedule_screen.dart';
+import 'package:fitiq/views/schedules/views/schedule_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // ── Theme constants ──────────────────────────────────────────────────────────
 
@@ -41,11 +40,11 @@ const List<_NavItem> _navItems = [
     icon: Icons.home_outlined,
     activeIcon: Icons.home_rounded,
   ),
-  _NavItem(
-    label: 'Trainers',
-    icon: Icons.people_outline_rounded,
-    activeIcon: Icons.people_rounded,
-  ),
+  // _NavItem(
+  //   label: 'Trainers',
+  //   icon: Icons.people_outline_rounded,
+  //   activeIcon: Icons.people_rounded,
+  // ),
   _NavItem(
     label: 'Programs',
     icon: Icons.assignment_outlined,
@@ -63,17 +62,12 @@ const List<_NavItem> _navItems = [
   ),
 ];
 
-// ── Pages ─────────────────────────────────────────────────────────────────────
-
 const List<Widget> _pages = [
   HomeScreen(),
-  // TrainersScreen(),   ← add when ready
   ProgramsScreen(),
   ScheduleScreen(),
   ProfileScreen(),
 ];
-
-// ── Dashboard screen ──────────────────────────────────────────────────────────
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -116,13 +110,8 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-// ── Floating bottom nav bar ───────────────────────────────────────────────────
-
 class _BottomNavBar extends StatelessWidget {
-  const _BottomNavBar({
-    required this.currentIndex,
-    required this.onTap,
-  });
+  const _BottomNavBar({required this.currentIndex, required this.onTap});
 
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -167,8 +156,6 @@ class _BottomNavBar extends StatelessWidget {
     );
   }
 }
-
-// ── Nav item widget ───────────────────────────────────────────────────────────
 
 class _NavItemWidget extends StatefulWidget {
   const _NavItemWidget({

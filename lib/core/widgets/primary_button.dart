@@ -127,7 +127,6 @@ class _AppButtonState extends State<AppButton>
     super.dispose();
   }
 
-  // ─── Theme Tokens ───────────────────────────────────────────────
   static const Color _primaryColor = Color(0xFFE8175D);
   static const Color _primaryDark = Color(0xFFC4134F);
   static const Color _onPrimary = Colors.white;

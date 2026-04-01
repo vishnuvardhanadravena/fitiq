@@ -8,7 +8,8 @@ class AppColors {
   // ─── Fitiq Brand Primary ────────────────────────────────────────────────────
   static const Color primary = Color(0xFFE8175D); // hot-pink CTA
   static const Color primaryDark = Color(0xFFBD1570); // pressed / dark variant
-
+  static const Color primaryColor = Color(0xFF2E3192);
+  static const Color lightGrayBackground = Color(0xFFF1F3F5);
   // ─── Accent ─────────────────────────────────────────────────────────────────
   /// Original CTA red accent — kept for backward compatibility
   static const Color accent = Color(0xFFFF2D55);
