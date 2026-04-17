@@ -7,7 +7,7 @@ class AppTextStyles {
 
   static TextStyle heading = TextStyle(
     fontSize: 24.sp,
-    fontFamily: "Oswald", 
+    fontFamily: "Oswald",
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
   );
@@ -65,7 +65,7 @@ class AppTextStyles {
 
   /// Form field label above input
   static TextStyle label = TextStyle(
-    fontSize: 13.sp,
+    fontSize: 12.sp,
     fontWeight: FontWeight.w500,
     fontFamily: "Lato",
     color: AppColors.textDark,
@@ -115,6 +115,13 @@ class AppTextStyles {
     fontWeight: FontWeight.w700,
     fontFamily: "Lato",
     color: Colors.white,
+    letterSpacing: 0.5,
+  );
+  static const TextStyle numbersstyle = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
+    fontFamily: "Oswald",
+    color: Colors.black,
     letterSpacing: 0.5,
   );
 }

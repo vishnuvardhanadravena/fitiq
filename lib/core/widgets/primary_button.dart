@@ -1,27 +1,10 @@
 import 'package:flutter/material.dart';
 
-enum ButtonVariant {
-  primary,
-  secondary,
-  outline,
-  ghost,
-  danger,
-  success,
-  text,
-}
+enum ButtonVariant { primary, secondary, outline, ghost, danger, success, text }
 
-enum ButtonSize {
-  small,
-  medium,
-  large,
-  extraLarge,
-}
+enum ButtonSize { small, medium, large, extraLarge }
 
-enum ButtonShape {
-  rounded,
-  pill,
-  square,
-}
+enum ButtonShape { rounded, pill, square }
 
 class AppButton extends StatefulWidget {
   final String label;
@@ -128,11 +111,11 @@ class _AppButtonState extends State<AppButton>
   }
 
   static const Color _primaryColor = Color(0xFFE8175D);
-  static const Color _primaryDark = Color(0xFFC4134F);
+  // static const Color _primaryDark = Color(0xFFC4134F);
   static const Color _onPrimary = Colors.white;
-  static const Color _surface = Colors.white;
-  static const Color _onSurface = Color(0xFF1A1A2E);
-  static const Color _borderColor = Color(0xFFE8175D);
+  // static const Color _surface = Colors.white;
+  // static const Color _onSurface = Color(0xFF1A1A2E);
+  // static const Color _borderColor = Color(0xFFE8175D);
   static const Color _dangerColor = Color(0xFFDC2626);
   static const Color _successColor = Color(0xFF16A34A);
   static const Color _disabledBg = Color(0xFFE5E7EB);
@@ -191,7 +174,8 @@ class _AppButtonState extends State<AppButton>
           background: _primaryColor,
           foreground: _onPrimary,
           border: Colors.transparent,
-          gradient: widget.gradient ??
+          gradient:
+              widget.gradient ??
               const LinearGradient(
                 colors: [Color(0xFFE8175D), Color(0xFFC4134F)],
                 begin: Alignment.topLeft,
@@ -307,7 +291,8 @@ class _AppButtonState extends State<AppButton>
             duration: const Duration(milliseconds: 150),
             width: widget.isFullWidth ? double.infinity : widget.width,
             height: widget.height ?? sc.height,
-            padding: widget.padding ??
+            padding:
+                widget.padding ??
                 EdgeInsets.symmetric(horizontal: sc.horizontalPadding),
             decoration: BoxDecoration(
               color: effectiveGradient == null ? effectiveBg : null,
@@ -353,10 +338,7 @@ class _AppButtonState extends State<AppButton>
               ),
           if (widget.loadingText != null) ...[
             SizedBox(width: sc.iconLabelSpacing),
-            Text(
-              widget.loadingText!,
-              style: _labelStyle(sc, fg),
-            ),
+            Text(widget.loadingText!, style: _labelStyle(sc, fg)),
           ],
         ],
       );
@@ -374,10 +356,7 @@ class _AppButtonState extends State<AppButton>
               Icon(widget.prefixIcon, color: fg, size: sc.iconSize),
           SizedBox(width: sc.iconLabelSpacing),
         ],
-        Text(
-          widget.label,
-          style: _labelStyle(sc, fg),
-        ),
+        Text(widget.label, style: _labelStyle(sc, fg)),
         if (hasSuffix) ...[
           SizedBox(width: sc.iconLabelSpacing),
           widget.suffixWidget ??

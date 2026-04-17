@@ -1,0 +1,57 @@
+import 'package:fitiq/core/theame/app_colors.dart';
+import 'package:fitiq/core/theame/app_text_styles.dart';
+import 'package:fitiq/core/widgets/custum_radio_selector.dart';
+import 'package:fitiq/core/widgets/text_felid.dart';
+import 'package:fitiq/views/profile/widgets/section_header.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class Step3Screen extends ConsumerStatefulWidget {
+  const Step3Screen({super.key});
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _Step3ScreenState();
+}
+
+class _Step3ScreenState extends ConsumerState<Step3Screen> {
+  String gender = "Male";
+
+  @override
+  Widget build(BuildContext context) {
+    final sm = MediaQuery.of(context).size;
+    final sw = sm.width;
+    final sh = sm.height;
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            SectionHeader(
+              title: "What’s Your Goal? ",
+              titleStyle: AppTextStyles.headingMedium.copyWith(
+                fontSize: sw * 0.06,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primaryColor,
+              ),
+              subtitle:
+                  "Choose your primary fitness goal — we’ll personalize everything for y",
+            ),
+            SizedBox(height: sh * 0.01),
+            FitiqTextField(label: 'Full Name', hint: "Enter your name"),
+            SizedBox(height: sh * 0.01),
+            FitiqTextField(label: 'Age', hint: "Enter your Age "),
+            SizedBox(height: sh * 0.01),
+            CustomSingleSelect<String>(
+              label: "Gender",
+              items: ["Male", "Female", "Others"],
+              selectedItem: gender,
+              onChanged: (val) {
+                setState(() => gender = val);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -187,10 +187,7 @@ class _OnboardingPage extends StatelessWidget {
           right: 0,
           top: 0,
           height: height * 0.8,
-          child: Image.asset(
-            data.imageAsset,
-            fit: BoxFit.cover,
-          ),
+          child: Image.asset(data.imageAsset, fit: BoxFit.cover),
         ),
       ],
     );

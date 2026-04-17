@@ -34,7 +34,7 @@ class SessionThumb extends StatelessWidget {
       child: (imageUrl == null || imageUrl!.isEmpty)
           ? Icon(
               Icons.fitness_center_rounded,
-              color: Colors.white.withOpacity(0.85),
+              color: Colors.white.withValues(alpha: 0.85),
               size: size * 0.38,
             )
           : null,

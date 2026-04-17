@@ -19,11 +19,7 @@ class FitiqLogo extends StatelessWidget {
   final double size;
   final bool showWordmark;
 
-  const FitiqLogo({
-    super.key,
-    this.size = 72,
-    this.showWordmark = true,
-  });
+  const FitiqLogo({super.key, this.size = 72, this.showWordmark = true});
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +29,7 @@ class FitiqLogo extends StatelessWidget {
         // Diamond badge
         Padding(
           padding: const EdgeInsets.all(0),
-          child: Image.asset(
-            AppAssets.logowithtext,
-            fit: BoxFit.cover,
-          ),
+          child: Image.asset(AppAssets.logowithtext, fit: BoxFit.cover),
         ),
         if (showWordmark) ...[
           SizedBox(height: 6.h),
@@ -177,6 +170,7 @@ class _FitiqSignInScreenState extends State<FitiqSignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = checkTablet(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SingleChildScrollView(
@@ -189,14 +183,14 @@ class _FitiqSignInScreenState extends State<FitiqSignInScreen> {
                 subtitle: 'Login to continue your wellness journey.',
                 logo: FitiqLogo(
                   showWordmark: false,
-                  size: MediaQuery.of(context).size.height * 0.01,
+                  size: 0.5.sh,
+                  //  MediaQuery.of(context).size.height * 0.01,
                 ),
-                height: MediaQuery.of(context).size.height * 0.32,
+                height: 0.4.sh,
                 backgroundImagePath: AppAssets.loginBackground,
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
                 child: Column(
                   children: [
                     FitiqTextField(
@@ -209,7 +203,7 @@ class _FitiqSignInScreenState extends State<FitiqSignInScreen> {
                       textInputAction: TextInputAction.next,
                       validator: (v) => validateEmail(v ?? ''),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 0.02.sh),
                     FitiqTextField(
                       label: 'Password',
                       hint: '••••••••••••',
@@ -226,15 +220,39 @@ class _FitiqSignInScreenState extends State<FitiqSignInScreen> {
                       FitiqErrorBanner(message: _errorMessage!),
                     ],
                     SizedBox(height: 24.h),
+                    // FitiqPrimaryButton(
+                    //   label: 'Sign In',
+                    //   trailingIcon: Icons.arrow_forward,
+                    //   onPressed: _handleSignIn,
+                    //   isLoading: _loading,
+                    //   fontFamily: "Oswald",
+                    //   height: 0.07.sh,
+                    //   // width: ,
+                    // ),
                     FitiqPrimaryButton(
-                      label: 'Sign In',
+                      label: 'Submit',
+                      onPressed: () {},
+                      width: double.infinity,
+                      height: isTablet ? 70.h : 54.h,
+                      fontSize: isTablet ? 9.sp : 16.sp,
+                      iconSize: isTablet ? 13.sp : 20.sp,
+                      borderRadius: isTablet ? 16 : 12,
+                      padding: isTablet
+                          ? EdgeInsets.symmetric(horizontal: 24, vertical: 16)
+                          : EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      // leadingIcon: Icons.arrow_forward,
                       trailingIcon: Icons.arrow_forward,
-                      onPressed: _handleSignIn,
-                      isLoading: _loading,
-                      fontFamily: "Oswald",
                     ),
                     SizedBox(height: 24.h),
-                    FitiqDividerWithLabel(label: 'or continue with'),
+                    // FitiqDividerWithLabel(label: 'or continue with'),
+                    FitiqDividerWithLabel(
+                      label: 'or continue with',
+                      horizontalPadding: isTablet ? 20 : 12,
+                      thickness: isTablet ? 3 : 2,
+                      textStyle: AppTextStyles.caption.copyWith(
+                        fontSize: isTablet ? 20 : 16,
+                      ),
+                    ),
                     SizedBox(height: 24.h),
                     FitiqSocialAuthRow(
                       onInstagram: () {
@@ -255,7 +273,7 @@ class _FitiqSignInScreenState extends State<FitiqSignInScreen> {
                       promptText: "Don't have an account?",
                       registerText: "Register",
                       registerTextStyle: TextStyle(
-                        fontSize: 16.sp,
+                        fontSize: isTablet ? 12.sp : 14.sp,
                         fontWeight: FontWeight.bold,
                         color: AppColors.primary,
                       ),
@@ -308,7 +326,10 @@ class FitiqErrorBanner extends StatelessWidget {
             child: Text(
               message,
               style: TextStyle(
-                  fontSize: 13, color: color, fontWeight: FontWeight.w500),
+                fontSize: 13,
+                color: color,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -328,8 +349,8 @@ class FitiqSnackBar {
     final color = isSuccess
         ? AppColors.success
         : isError
-            ? AppColors.error
-            : AppColors.primary;
+        ? AppColors.error
+        : AppColors.primary;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -339,15 +360,17 @@ class FitiqSnackBar {
               isSuccess
                   ? Icons.check_circle_outline
                   : isError
-                      ? Icons.error_outline
-                      : Icons.info_outline,
+                  ? Icons.error_outline
+                  : Icons.info_outline,
               color: Colors.white,
               size: 18,
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Text(message,
-                  style: const TextStyle(color: Colors.white, fontSize: 14)),
+              child: Text(
+                message,
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
             ),
           ],
         ),
@@ -429,8 +452,9 @@ class FitiqCheckboxTile extends StatelessWidget {
             value: value,
             onChanged: onChanged,
             activeColor: AppColors.primary,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
           ),
         ),
         const SizedBox(width: 8),
@@ -456,4 +480,8 @@ class FitiqCheckboxTile extends StatelessWidget {
       ],
     );
   }
+}
+
+bool checkTablet(BuildContext context) {
+  return MediaQuery.of(context).size.width >= 600;
 }

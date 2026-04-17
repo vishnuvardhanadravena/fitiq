@@ -1,53 +1,28 @@
 import 'dart:math';
-
+import 'package:fitiq/views/Notifications/Screens/notificationScreen.dart';
+import 'package:fitiq/views/PrivacyPolicy/screens/privacy_policy_screen.dart';
+import 'package:fitiq/views/profile/screens/edit_profile.dart';
+import 'package:fitiq/views/support/screens/support.dart';
+import 'package:fitiq/views/user_info/screens/main_step_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:fitiq/routes/route_constants.dart';
+import 'package:fitiq/views/Subscription/views/subscription.dart';
 import 'package:fitiq/views/auth/Screens/forgot_password.dart';
 import 'package:fitiq/views/auth/Screens/landing_pages.dart';
 import 'package:fitiq/views/auth/Screens/login_screen.dart';
 import 'package:fitiq/views/auth/Screens/signup_screen.dart';
 import 'package:fitiq/views/auth/Screens/splash_screen.dart';
 import 'package:fitiq/views/dashborad/dashboard_screen.dart';
+import 'package:fitiq/views/payments/screens/payment_hostory.dart';
 import 'package:fitiq/views/plans/screens/payment_sucesess.dart';
 import 'package:fitiq/views/plans/screens/plan_detailes.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final GoRouter appRouter = GoRouter(
   initialLocation: RouteList.splash,
   navigatorKey: rootNavigatorKey,
-  // errorBuilder: (context, state) {
-  //   final error = state.error;
-
-  //   AppLogger.error(
-  //     "GoRouter Error",
-  //     error: error,
-  //     // stackTrace: error is Error ? error.toString() : null,
-  //   );
-
-  //   return const UnknownRouteScreen();
-  // },
-  // redirect: (context, state) {
-  //   final container = ProviderScope.containerOf(context);
-
-  //   final storage = container.read(secureStorageProvider);
-  //   final prefs = container.read(sharedPrefsProvider);
-  //   final isFirstTime = prefs.getBool('isFirstTime') ?? true;
-  //   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-
-  //   final isGoingToLogin = state.matchedLocation == RouteList.login;
-  //   final isGoingToOnboarding = state.matchedLocation == RouteList.onboarding;
-
-  //   if (isFirstTime && !isGoingToOnboarding) {
-  //     return RouteList.onboarding;
-  //   }
-
-  //   if (!isLoggedIn && !isGoingToLogin) {
-  //     return RouteList.login;
-  //   }
-
-  //   return null; // allow navigation
-  // },
   routes: [
     GoRoute(
       path: RouteList.splash,
@@ -69,16 +44,21 @@ final GoRouter appRouter = GoRouter(
       name: RouteList.onboarding,
       builder: (context, state) => const OnboardingScreen(),
     ),
+    GoRoute(
+      path: RouteList.stepscreens,
+      name: RouteList.stepscreens,
+      builder: (context, state) => const StepFlowScreen(),
+    ),
 
-    // ShellRoute(
-    //   builder: (context, state, child) {
-    //     return MainNavBarScreen(child: child);
-    //   },
-    //   routes: [
     GoRoute(
       path: RouteList.home,
       name: RouteList.home,
       builder: (context, state) => const DashboardScreen(),
+    ),
+    GoRoute(
+      path: RouteList.editProfile,
+      name: RouteList.editProfile,
+      builder: (context, state) => const EditProfileScreen(),
     ),
     GoRoute(
       path: RouteList.planDetails,
@@ -89,59 +69,15 @@ final GoRouter appRouter = GoRouter(
         return FitnessPlanDetailScreen(planId: planId);
       },
     ),
-
-    //     GoRoute(
-    //       path: RouteList.bookings,
-    //       name: RouteList.bookings,
-    //       builder: (context, state) => const BookingsScreen(),
-    //     ),
-    //     GoRoute(
-    //       path: RouteList.profile,
-    //       name: RouteList.profile,
-    //       builder: (context, state) => const ProfileScreen(),
-    //     ),
-    //   ],
-    // ),
-    // GoRoute(
-    //   path: RouteList.otp,
-    //   name: RouteList.otp,
-    //   builder: (context, state) {
-    //     final data = state.extra as Map<String, dynamic>;
-
-    //     final phone = data["phone"] as String;
-    //     final type = data["type"] as LoginType;
-    //     final otp = data["otp"] as int;
-
-    //     return Otpverifyscreen(phone: phone, type: type, otp: otp);
-    //   },
-    // ),
     GoRoute(
       path: RouteList.forgotPassword,
       name: RouteList.forgotPassword,
       builder: (context, state) => const ForgotPassword(),
     ),
-
     // GoRoute(
     //   path: RouteList.changePassword,
     //   name: RouteList.changePassword,
-    //   builder: (context, state) => const ChangePasswordScreen(),
-    // ),
-    // GoRoute(
-    //   path: RouteList.editProfile,
-    //   name: RouteList.editProfile,
-    //   builder: (context, state) => const EditProfileScreen(),
-    // ),
-
-    // GoRoute(
-    //   path: RouteList.rooms,
-    //   name: RouteList.rooms,
-    //   builder: (context, state) {
-    //     final args = state.extra as RoomsArgs?;
-    //     if (args == null) {
-    //       return const Scaffold(body: Center(child: Text("Invalid room data")));
-    //     }
-    //     return RoomsScreen(acommodation: args.acommodation);
-    //   },
+    //   builder: (context, state) => const SubscriptionScreen(),
     // ),
     GoRoute(
       path: RouteList.paymentsuccess,
@@ -152,57 +88,55 @@ final GoRouter appRouter = GoRouter(
           child: const EnrollmentSuccessScreen(),
           transitionDuration: const Duration(milliseconds: 1000),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return AnimatedBuilder(
-              animation: animation,
-              builder: (context, _) {
-                final size = MediaQuery.of(context).size;
+            final size = MediaQuery.of(context).size;
+            final maxRadius = sqrt(
+              (size.width * size.width) + (size.height * size.height),
+            );
+            final radius =
+                CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeInOut,
+                ).value *
+                maxRadius;
 
-                final maxRadius = sqrt(
-                  (size.width * size.width) + (size.height * size.height),
-                );
-
-                final radius =
-                    CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.easeInOut,
-                    ).value *
-                    maxRadius;
-
-                return ClipPath(
-                  clipper: _CircularRevealClipper(
-                    radius: radius,
-                    center: Offset(size.width / 2, size.height / 2),
-                  ),
-                  child: child,
-                );
-              },
+            return ClipPath(
+              clipper: _CircularRevealClipper(
+                radius: radius,
+                center: Offset(size.width / 2, size.height / 2),
+              ),
+              child: child,
             );
           },
         );
       },
     ),
-
-    // GoRoute(
-    //   path: RouteList.contactus,
-    //   name: RouteList.contactus,
-    //   builder: (context, state) => ContactUsScreen(),
-    // ),
+    GoRoute(
+      path: RouteList.paymenthistory,
+      name: RouteList.paymenthistory,
+      builder: (context, state) => PaymentHistoryScreen(),
+    ),
+    GoRoute(
+      path: RouteList.subscription,
+      name: RouteList.subscription,
+      builder: (context, state) => SubscriptionScreen(),
+    ),
+    GoRoute(
+      path: RouteList.notificationSettigs,
+      name: RouteList.notificationSettigs,
+      builder: (context, state) => NotificationsScreen(),
+    ),
+    GoRoute(
+      path: RouteList.privacy,
+      name: RouteList.privacy,
+      builder: (context, state) => PrivacyPolicyScreen(),
+    ),
+    GoRoute(
+      path: RouteList.help,
+      name: RouteList.help,
+      builder: (context, state) => SupportScreen(),
+    ),
   ],
 );
-
-// class RoomDetailArgs {
-//   final roommodel.RoomModel room;
-//   final Acommodation? acommodation;
-
-//   RoomDetailArgs({required this.room, this.acommodation});
-// }
-
-// class RoomsArgs {
-//   final List<roommodel.RoomModel> rooms;
-//   final Acommodation? acommodation;
-
-//   RoomsArgs({required this.rooms, required this.acommodation});
-// }
 
 class _CircularRevealClipper extends CustomClipper<Path> {
   final double radius;
@@ -211,9 +145,8 @@ class _CircularRevealClipper extends CustomClipper<Path> {
   _CircularRevealClipper({required this.radius, required this.center});
 
   @override
-  Path getClip(Size size) {
-    return Path()..addOval(Rect.fromCircle(center: center, radius: radius));
-  }
+  Path getClip(Size size) =>
+      Path()..addOval(Rect.fromCircle(center: center, radius: radius));
 
   @override
   bool shouldReclip(_CircularRevealClipper old) =>

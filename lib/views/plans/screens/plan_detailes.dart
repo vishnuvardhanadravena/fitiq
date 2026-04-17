@@ -1,4 +1,5 @@
 import 'package:fitiq/core/theame/app_text_styles.dart';
+import 'package:fitiq/core/widgets/blue_container_wraper.dart';
 import 'package:fitiq/routes/route_constants.dart';
 import 'package:fitiq/views/plans/models/fitness_plan_detail_res.dart';
 import 'package:fitiq/views/plans/provider/firness_plan_provider.dart';
@@ -6,9 +7,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+
+class Responsive {
+  final double width;
+  final double height;
+
+  const Responsive({required this.width, required this.height});
+
+  bool get isTablet => width >= 600;
+
+  // Hero image height: 40% on mobile, 45% on tablet
+  double get heroHeight => isTablet ? height * 0.45 : height * 0.38;
+
+  // Stats card height: slightly taller on tablet
+  double get statsCardHeight => isTablet ? height * 0.18 : height * 0.17;
+
+  // Horizontal padding: more breathing room on tablet
+  double get hPad => isTablet ? width * 0.06 : 16.0;
+
+  // Card border radius scales with screen
+  double get cardRadius => isTablet ? 20.0 : 14.0;
+
+  // Hero card overlap bottom space
+  double get heroOverlap => isTablet ? 110.0 : 90.0;
+
+  // Stat icon size
+  double get statIconSize => isTablet ? 42.0 : 36.0;
+
+  // Font scale factor
+  double get fontScale => isTablet ? 1.15 : 1.0;
+
+  // Bottom bar height
+  double get bottomBarVPad => isTablet ? 18.0 : 14.0;
+
+  // Grid columns for stats: 3 on wide tablet, 2 otherwise
+  int get statColumns => width >= 840 ? 3 : 2;
+}
 
 final expandedPhasesProvider =
     StateNotifierProvider<ExpandedPhasesNotifier, Set<int>>(
@@ -16,7 +52,7 @@ final expandedPhasesProvider =
     );
 
 class ExpandedPhasesNotifier extends StateNotifier<Set<int>> {
-  ExpandedPhasesNotifier() : super({0}); // first one open by default
+  ExpandedPhasesNotifier() : super({0});
 
   void toggle(int index) {
     final next = Set<int>.from(state);
@@ -37,42 +73,81 @@ class FitnessPlanDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final planAsync = ref.watch(fitnessPlanByIdProvider(planId));
+
     return planAsync.when(
-      loading: () =>
-          const Scaffold(body: HomeSkeleton()), // show skeleton while loading
-
+      loading: () => const Scaffold(body: HomeSkeleton()),
       error: (err, _) => Scaffold(body: Center(child: Text(err.toString()))),
-
       data: (plan) {
-        return Scaffold(
-          backgroundColor: const Color(0xFFF5F6FA),
-          body: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  // physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _FeaturedCard(plan: plan),
-                      SizedBox(height: 16.h),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _WhatsIncluded(inclusions: plan.inclusions),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final size = MediaQuery.of(context).size;
+            final r = Responsive(
+              width: constraints.maxWidth,
+              height: size.height,
+            );
+
+            return SafeArea(
+              top: false,
+              child: Scaffold(
+                backgroundColor: const Color(0xFFF5F6FA),
+                body: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _FeaturedCard(plan: plan, r: r),
+                            SizedBox(height: r.isTablet ? 20 : 16),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: r.hPad),
+                              child: r.isTablet
+                                  ? Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          flex: 5,
+                                          child: WhatsIncluded(
+                                            inclusions: plan.inclusions,
+                                            r: r,
+                                          ),
+                                        ),
+                                        SizedBox(width: r.hPad),
+                                        Expanded(
+                                          flex: 7,
+                                          child: _ProgramBreakdown(
+                                            phases: plan.phases,
+                                            r: r,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : Column(
+                                      children: [
+                                        WhatsIncluded(
+                                          inclusions: plan.inclusions,
+                                          r: r,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        _ProgramBreakdown(
+                                          phases: plan.phases,
+                                          r: r,
+                                        ),
+                                      ],
+                                    ),
+                            ),
+                            SizedBox(height: r.isTablet ? 32 : 24),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 16),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _ProgramBreakdown(phases: plan.phases, ref: ref),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
+                    ),
+                    _BottomBar(plan: plan, r: r),
+                  ],
                 ),
               ),
-              _BottomBar(plan: plan),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -81,27 +156,25 @@ class FitnessPlanDetailScreen extends ConsumerWidget {
 
 class _FeaturedCard extends StatelessWidget {
   final FitnessPlanDetail plan;
+  final Responsive r;
 
-  const _FeaturedCard({required this.plan});
+  const _FeaturedCard({required this.plan, required this.r});
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height * 0.35;
-
     return SizedBox(
-      height: height + 90,
-
+      height: r.heroHeight + r.heroOverlap,
       child: Stack(
         clipBehavior: Clip.none,
-
         children: [
+          // Hero image with overlay
           ClipRRect(
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(24),
-              bottomRight: Radius.circular(24),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(r.isTablet ? 32 : 24),
+              bottomRight: Radius.circular(r.isTablet ? 32 : 24),
             ),
             child: SizedBox(
-              height: height,
+              height: r.heroHeight,
               width: double.infinity,
               child: Stack(
                 children: [
@@ -111,39 +184,37 @@ class _FeaturedCard extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   ),
-
                   Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.centerRight,
-                          end: Alignment.centerLeft,
-                          colors: [
-                            Colors.black.withOpacity(0.3),
-                            Colors.black.withOpacity(0.75),
-                          ],
-                        ),
+                    child: BackgroundContainer(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(r.isTablet ? 32 : 24),
+                        bottomRight: Radius.circular(r.isTablet ? 32 : 24),
+                      ),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerRight,
+                        end: Alignment.centerLeft,
+                        colors: [
+                          Colors.black.withValues(alpha: 0.3),
+                          Colors.black.withValues(alpha: 0.75),
+                        ],
                       ),
                     ),
                   ),
-
-                  /// 🔥 CONTENT
                   Positioned.fill(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 20,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: r.hPad,
+                        vertical: r.isTablet ? 28 : 20,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Spacer(),
-
                           if (plan.badge != null)
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: r.isTablet ? 14 : 10,
+                                vertical: r.isTablet ? 6 : 4,
                               ),
                               decoration: BoxDecoration(
                                 color: Colors.orange,
@@ -153,54 +224,50 @@ class _FeaturedCard extends StatelessWidget {
                                 plan.badge!,
                                 style: AppTextStyles.label.copyWith(
                                   color: Colors.white,
-                                  fontSize: 10,
+                                  fontSize: r.isTablet ? 12 : 10,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
-
-                          const SizedBox(height: 10),
-
+                          SizedBox(height: r.isTablet ? 12 : 10),
                           Text(
                             plan.title,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.headingLarge.copyWith(
                               color: Colors.white,
+                              fontSize: r.isTablet ? 30 : null,
                             ),
                           ),
-
-                          const SizedBox(height: 6),
-
+                          SizedBox(height: r.isTablet ? 8 : 6),
                           Text(
                             plan.subtitle,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.label.copyWith(
-                              color: Colors.white.withOpacity(0.85),
-                              fontSize: 13,
+                              color: Colors.white.withValues(alpha: 0.85),
+                              fontSize: r.isTablet ? 15 : 13,
                             ),
                           ),
-                          const SizedBox(height: 6),
+                          SizedBox(height: r.isTablet ? 8 : 6),
                           Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.star,
                                 color: Colors.amber,
-                                size: 16,
+                                size: r.isTablet ? 20 : 16,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 '${plan.rating} (${plan.reviewCount} Reviews)',
                                 style: AppTextStyles.label.copyWith(
                                   color: Colors.white,
-                                  fontSize: 12,
+                                  fontSize: r.isTablet ? 14 : 12,
                                 ),
                               ),
                             ],
                           ),
                           const Spacer(),
-                          Spacer(),
                         ],
                       ),
                     ),
@@ -210,14 +277,14 @@ class _FeaturedCard extends StatelessWidget {
             ),
           ),
 
-          /// 🔥 STATS CARD INSIDE STACK
+          // Stats card overlapping the hero
           Positioned(
-            left: 16,
-            right: 16,
+            left: r.hPad,
+            right: r.hPad,
             bottom: 0,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: _StatsCard(plan: plan),
+              child: _StatsCard(plan: plan, r: r),
             ),
           ),
         ],
@@ -228,79 +295,58 @@ class _FeaturedCard extends StatelessWidget {
 
 class _StatsCard extends StatelessWidget {
   final FitnessPlanDetail plan;
+  final Responsive r;
 
-  const _StatsCard({required this.plan});
+  const _StatsCard({required this.plan, required this.r});
 
   @override
   Widget build(BuildContext context) {
     final stats = plan.stats;
+    final columns = r.statColumns;
 
-    // Split into 2 columns
-    final left = <Widget>[];
-    final right = <Widget>[];
-
-    for (int i = 0; i < stats.length; i++) {
-      final stat = stats[i];
-      final widget = _StatItem(stat: stat);
-
-      if (i.isEven) {
-        left.add(widget);
-      } else {
-        right.add(widget);
-      }
+    // Build rows dynamically based on column count
+    final List<List<dynamic>> rows = [];
+    for (int i = 0; i < stats.length; i += columns) {
+      rows.add(stats.sublist(i, (i + columns).clamp(0, stats.length)));
     }
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.17,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(r.isTablet ? 20 : 16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(r.isTablet ? 20 : 16),
         color: Colors.white,
-      ),
-
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          /// LEFT COLUMN
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _withSpacing(left),
-            ),
-          ),
-
-          const SizedBox(width: 12),
-
-          /// RIGHT COLUMN
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _withSpacing(right),
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: rows.map((rowItems) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Row(
+              children: rowItems.map((stat) {
+                return Expanded(
+                  child: _StatItem(stat: stat, r: r),
+                );
+              }).toList(),
+            ),
+          );
+        }).toList(),
+      ),
     );
-  }
-
-  List<Widget> _withSpacing(List<Widget> items) {
-    var spacing = 20.0.sp;
-
-    return List.generate(items.length, (index) {
-      return Padding(
-        padding: EdgeInsets.only(
-          bottom: index == items.length - 1 ? 0 : spacing,
-        ),
-        child: items[index],
-      );
-    });
   }
 }
 
 class _StatItem extends StatelessWidget {
   final dynamic stat;
+  final Responsive r;
 
-  const _StatItem({required this.stat});
+  const _StatItem({required this.stat, required this.r});
 
   @override
   Widget build(BuildContext context) {
@@ -309,25 +355,25 @@ class _StatItem extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        /// Icon
         Container(
-          width: 36,
-          height: 36,
+          width: r.statIconSize,
+          height: r.statIconSize,
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.08),
-            borderRadius: BorderRadius.circular(10),
+            color: Colors.black.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(r.isTablet ? 12 : 10),
           ),
-          child: Icon(iconData, size: 18, color: Colors.black87),
+          child: Icon(
+            iconData,
+            size: r.isTablet ? 22 : 18,
+            color: Colors.black87,
+          ),
         ),
-
-        const SizedBox(width: 10),
-
-        /// Text
+        SizedBox(width: r.isTablet ? 12 : 10),
         Expanded(
           child: Text(
             stat.label,
             style: AppTextStyles.label.copyWith(
-              fontSize: 12,
+              fontSize: r.isTablet ? 13 : 12,
               fontWeight: FontWeight.w600,
               color: Colors.black87,
             ),
@@ -340,26 +386,27 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-class _WhatsIncluded extends StatelessWidget {
+class WhatsIncluded extends StatelessWidget {
   final List<String> inclusions;
+  final Responsive r;
 
-  const _WhatsIncluded({required this.inclusions});
+  const WhatsIncluded({super.key, required this.inclusions, required this.r});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(r.isTablet ? 20 : 16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(r.isTablet ? 20 : 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -368,22 +415,30 @@ class _WhatsIncluded extends StatelessWidget {
             style: AppTextStyles.headingMedium.copyWith(
               color: const Color(0xFF1A1A2E),
               fontFamily: 'Oswald',
+              fontSize: r.isTablet ? 20 : null,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: r.isTablet ? 16 : 12),
           ...inclusions.map(
             (item) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: EdgeInsets.only(bottom: r.isTablet ? 14 : 10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.check_circle,
-                    color: Color(0xFF2196F3),
-                    size: 18,
+                    color: const Color(0xFF2196F3),
+                    size: r.isTablet ? 22 : 18,
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(child: Text(item, style: AppTextStyles.body)),
+                  SizedBox(width: r.isTablet ? 12 : 10),
+                  Expanded(
+                    child: Text(
+                      item,
+                      style: AppTextStyles.body.copyWith(
+                        fontSize: r.isTablet ? 15 : null,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -394,11 +449,13 @@ class _WhatsIncluded extends StatelessWidget {
   }
 }
 
+// ─── Program Breakdown ────────────────────────────────────────────────────────
+
 class _ProgramBreakdown extends ConsumerWidget {
   final List<ProgramPhase> phases;
-  final WidgetRef ref;
+  final Responsive r;
 
-  const _ProgramBreakdown({required this.phases, required this.ref});
+  const _ProgramBreakdown({required this.phases, required this.r});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -412,95 +469,83 @@ class _ProgramBreakdown extends ConsumerWidget {
           style: AppTextStyles.headingMedium.copyWith(
             color: const Color(0xFF1A1A2E),
             fontFamily: 'Oswald',
+            fontSize: r.isTablet ? 20 : null,
           ),
         ),
-        const SizedBox(height: 12),
-
+        SizedBox(height: r.isTablet ? 16 : 12),
         ...List.generate(phases.length, (index) {
           final phase = phases[index];
           final isOpen = expanded.contains(index);
-
-          /// 🔥 FIX: convert once (clean)
           final tagColor = hexToColor(phase.tagColor);
 
           return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: EdgeInsets.only(bottom: r.isTablet ? 14 : 10),
             child: GestureDetector(
               onTap: () =>
                   ref.read(expandedPhasesProvider.notifier).toggle(index),
-
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
                 curve: Curves.easeInOut,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(r.cardRadius),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
+                      color: Colors.black.withValues(alpha: 0.06),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
                   ],
                 ),
-
                 child: Padding(
-                  padding: const EdgeInsets.all(14),
+                  padding: EdgeInsets.all(r.isTablet ? 18 : 14),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          /// 🔥 Colored week tag
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: r.isTablet ? 14 : 10,
+                              vertical: r.isTablet ? 6 : 4,
                             ),
                             decoration: BoxDecoration(
-                              color: tagColor.withOpacity(0.12), // ✅ FIX
+                              color: tagColor.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: tagColor.withOpacity(0.4), // ✅ FIX
+                                color: tagColor.withValues(alpha: 0.4),
                               ),
                             ),
                             child: Text(
                               phase.weekRange,
                               style: AppTextStyles.label.copyWith(
-                                color: tagColor, // ✅ FIX
+                                color: tagColor,
                                 fontWeight: FontWeight.w700,
-                                fontSize: 11,
+                                fontSize: r.isTablet ? 13 : 11,
                               ),
                             ),
                           ),
-
-                          const SizedBox(width: 10),
-
-                          /// Phase title
+                          SizedBox(width: r.isTablet ? 14 : 10),
                           Expanded(
                             child: Text(
                               phase.title,
                               style: AppTextStyles.headingSmall.copyWith(
                                 color: const Color(0xFF1A1A2E),
-                                fontSize: 14,
+                                fontSize: r.isTablet ? 16 : 14,
                               ),
                             ),
                           ),
-
-                          /// Chevron
                           AnimatedRotation(
                             turns: isOpen ? 0.5 : 0,
                             duration: const Duration(milliseconds: 250),
-                            child: const Icon(
+                            child: Icon(
                               Icons.keyboard_arrow_down,
                               color: Colors.grey,
-                              size: 20,
+                              size: r.isTablet ? 24 : 20,
                             ),
                           ),
                         ],
                       ),
-
-                      /// Description
                       AnimatedCrossFade(
                         duration: const Duration(milliseconds: 250),
                         crossFadeState: isOpen
@@ -508,11 +553,12 @@ class _ProgramBreakdown extends ConsumerWidget {
                             : CrossFadeState.showFirst,
                         firstChild: const SizedBox.shrink(),
                         secondChild: Padding(
-                          padding: const EdgeInsets.only(top: 10),
+                          padding: EdgeInsets.only(top: r.isTablet ? 14 : 10),
                           child: Text(
                             phase.description,
                             style: AppTextStyles.body.copyWith(
                               color: Colors.grey.shade600,
+                              fontSize: r.isTablet ? 15 : null,
                             ),
                           ),
                         ),
@@ -529,20 +575,26 @@ class _ProgramBreakdown extends ConsumerWidget {
   }
 }
 
+// ─── Bottom Bar ───────────────────────────────────────────────────────────────
+
 class _BottomBar extends StatelessWidget {
   final FitnessPlanDetail plan;
+  final Responsive r;
 
-  const _BottomBar({required this.plan});
+  const _BottomBar({required this.plan, required this.r});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      padding: EdgeInsets.symmetric(
+        horizontal: r.isTablet ? r.hPad : 20,
+        vertical: r.bottomBarVPad,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 12,
             offset: const Offset(0, -4),
           ),
@@ -550,7 +602,6 @@ class _BottomBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Price + note
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -559,7 +610,7 @@ class _BottomBar extends StatelessWidget {
                 plan.formattedPrice,
                 style: AppTextStyles.headingMedium.copyWith(
                   color: const Color(0xFF1A1A2E),
-                  fontSize: 22,
+                  fontSize: r.isTablet ? 28 : 22,
                   fontFamily: 'Oswald',
                 ),
               ),
@@ -567,45 +618,43 @@ class _BottomBar extends StatelessWidget {
                 plan.priceNote,
                 style: AppTextStyles.label.copyWith(
                   color: Colors.grey.shade500,
-                  fontSize: 11,
+                  fontSize: r.isTablet ? 13 : 11,
                 ),
               ),
             ],
           ),
-
           const Spacer(),
-
-          // Enroll Now button
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(r.isTablet ? 18 : 14),
               gradient: const LinearGradient(
                 colors: [Color(0xFFFF416C), Color(0xFFFF4B2B)],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFFF416C).withOpacity(0.4),
+                  color: const Color(0xFFFF416C).withValues(alpha: 0.4),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
               ],
             ),
             child: ElevatedButton(
-              onPressed: () {
-                context.push(RouteList.paymentsuccess);
-              },
+              onPressed: () => context.push(RouteList.paymentsuccess),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 shadowColor: Colors.transparent,
-                padding: EdgeInsets.all(8.0.sp),
+                padding: EdgeInsets.symmetric(
+                  horizontal: r.isTablet ? 32 : 20,
+                  vertical: r.isTablet ? 16 : 12,
+                ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(r.isTablet ? 18 : 14),
                 ),
               ),
               child: Text(
                 'Enroll Now',
                 style: AppTextStyles.buttonTextStyle.copyWith(
-                  fontSize: 15,
+                  fontSize: r.isTablet ? 17 : 15,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -617,170 +666,214 @@ class _BottomBar extends StatelessWidget {
   }
 }
 
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+
 class HomeSkeleton extends StatelessWidget {
   const HomeSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height * 0.35;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final size = MediaQuery.of(context).size;
+        final r = Responsive(width: constraints.maxWidth, height: size.height);
 
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.white,
-
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// FEATURED CARD
-            SizedBox(
-              height: height + 90,
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(24),
-                      bottomRight: Radius.circular(24),
-                    ),
-                    child: shimmerBox(
-                      height: height,
-                      width: double.infinity,
-                      radius: 0,
-                    ),
-                  ),
-
-                  Positioned(
-                    left: 16,
-                    right: 16,
-                    bottom: 0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: _StatsCardShimmer(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            /// WHATS INCLUDED
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: Colors.white,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    shimmerBox(height: 18, width: 150),
-                    const SizedBox(height: 12),
-
-                    ...List.generate(3, (index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Row(
-                          children: [
-                            shimmerBox(height: 18, width: 18),
-                            const SizedBox(width: 10),
-                            Expanded(child: shimmerBox(height: 12)),
-                          ],
+        return Shimmer.fromColors(
+          baseColor: Colors.grey.shade300,
+          highlightColor: Colors.white,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Hero skeleton
+                SizedBox(
+                  height: r.heroHeight + r.heroOverlap,
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(r.isTablet ? 32 : 24),
+                          bottomRight: Radius.circular(r.isTablet ? 32 : 24),
                         ),
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            /// PROGRAM BREAKDOWN
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  shimmerBox(height: 18, width: 180),
-                  const SizedBox(height: 12),
-
-                  ...List.generate(5, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
-                          color: Colors.white,
-                        ),
-                        child: Row(
-                          children: [
-                            shimmerBox(height: 20, width: 60, radius: 20),
-                            const SizedBox(width: 10),
-                            Expanded(child: shimmerBox(height: 14)),
-                            shimmerBox(height: 16, width: 16),
-                          ],
+                        child: shimmerBox(
+                          height: r.heroHeight,
+                          width: double.infinity,
+                          radius: 0,
                         ),
                       ),
-                    );
-                  }),
-                ],
-              ),
-            ),
+                      Positioned(
+                        left: r.hPad,
+                        right: r.hPad,
+                        bottom: 0,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: _StatsCardShimmer(r: r),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-            const SizedBox(height: 24),
-          ],
-        ),
-      ),
+                SizedBox(height: r.isTablet ? 20 : 16),
+
+                // Body skeleton: side-by-side on tablet
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: r.hPad),
+                  child: r.isTablet
+                      ? Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 5,
+                              child: _WhatsIncludedShimmer(r: r),
+                            ),
+                            SizedBox(width: r.hPad),
+                            Expanded(
+                              flex: 7,
+                              child: _ProgramBreakdownShimmer(r: r),
+                            ),
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            _WhatsIncludedShimmer(r: r),
+                            const SizedBox(height: 16),
+                            _ProgramBreakdownShimmer(r: r),
+                          ],
+                        ),
+                ),
+
+                SizedBox(height: r.isTablet ? 32 : 24),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
 
-Widget shimmerBox({double? height, double? width, double radius = 8}) {
-  return Container(
-    height: height,
-    width: width,
-    decoration: BoxDecoration(
-      color: Colors.grey,
-      borderRadius: BorderRadius.circular(radius),
-    ),
-  );
-}
-
-class _StatsCardShimmer extends StatelessWidget {
-  const _StatsCardShimmer();
+class _WhatsIncludedShimmer extends StatelessWidget {
+  final Responsive r;
+  const _WhatsIncludedShimmer({required this.r});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.17,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(r.isTablet ? 20 : 16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: const Color.fromARGB(255, 163, 42, 42),
+        borderRadius: BorderRadius.circular(r.isTablet ? 20 : 16),
+        color: Colors.white,
       ),
-
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: _column()),
-          const SizedBox(width: 12),
-          Expanded(child: _column()),
+          shimmerBox(height: r.isTablet ? 22 : 18, width: 150),
+          SizedBox(height: r.isTablet ? 16 : 12),
+          ...List.generate(
+            3,
+            (i) => Padding(
+              padding: EdgeInsets.only(bottom: r.isTablet ? 14 : 10),
+              child: Row(
+                children: [
+                  shimmerBox(
+                    height: r.isTablet ? 22 : 18,
+                    width: r.isTablet ? 22 : 18,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(child: shimmerBox(height: 12)),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget _column() {
-    return Column(children: [_item(), const SizedBox(height: 20), _item()]);
+class _ProgramBreakdownShimmer extends StatelessWidget {
+  final Responsive r;
+  const _ProgramBreakdownShimmer({required this.r});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        shimmerBox(height: r.isTablet ? 22 : 18, width: 180),
+        SizedBox(height: r.isTablet ? 16 : 12),
+        ...List.generate(
+          5,
+          (i) => Padding(
+            padding: EdgeInsets.only(bottom: r.isTablet ? 14 : 10),
+            child: Container(
+              padding: EdgeInsets.all(r.isTablet ? 18 : 14),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(r.cardRadius),
+                color: Colors.white,
+              ),
+              child: Row(
+                children: [
+                  shimmerBox(
+                    height: r.isTablet ? 26 : 20,
+                    width: r.isTablet ? 80 : 60,
+                    radius: 20,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(child: shimmerBox(height: 14)),
+                  shimmerBox(height: 20, width: 20),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StatsCardShimmer extends StatelessWidget {
+  final Responsive r;
+  const _StatsCardShimmer({required this.r});
+
+  @override
+  Widget build(BuildContext context) {
+    final columns = r.statColumns;
+
+    return Container(
+      padding: EdgeInsets.all(r.isTablet ? 20 : 16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(r.isTablet ? 20 : 16),
+        color: Colors.white,
+      ),
+      child: Row(
+        children: List.generate(columns, (colIndex) {
+          return Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(left: colIndex > 0 ? 12 : 0),
+              child: Column(
+                children: [
+                  _shimmerStatItem(r),
+                  SizedBox(height: r.isTablet ? 20 : 16),
+                  _shimmerStatItem(r),
+                ],
+              ),
+            ),
+          );
+        }),
+      ),
+    );
   }
 
-  Widget _item() {
+  Widget _shimmerStatItem(Responsive r) {
     return Row(
       children: [
-        shimmerBox(height: 36, width: 36, radius: 10),
+        shimmerBox(
+          height: r.statIconSize,
+          width: r.statIconSize,
+          radius: r.isTablet ? 12 : 10,
+        ),
         const SizedBox(width: 10),
         Expanded(
           child: Column(
@@ -795,4 +888,17 @@ class _StatsCardShimmer extends StatelessWidget {
       ],
     );
   }
+}
+
+// ─── Shared shimmer box ───────────────────────────────────────────────────────
+
+Widget shimmerBox({double? height, double? width, double radius = 8}) {
+  return Container(
+    height: height,
+    width: width,
+    decoration: BoxDecoration(
+      color: Colors.grey,
+      borderRadius: BorderRadius.circular(radius),
+    ),
+  );
 }

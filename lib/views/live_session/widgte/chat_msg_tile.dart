@@ -26,7 +26,7 @@ class ChatMessageTile extends StatelessWidget {
           // Avatar
           CircleAvatar(
             radius: avatarRadius,
-            backgroundColor: LiveVideoTheme.primaryPink.withOpacity(0.2),
+            backgroundColor: LiveVideoTheme.primaryPink.withValues(alpha: 0.2),
             backgroundImage: message.avatarUrl != null
                 ? NetworkImage(message.avatarUrl!)
                 : null,

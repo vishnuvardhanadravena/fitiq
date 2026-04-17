@@ -5,8 +5,6 @@ import 'package:fitiq/views/live_session/widgte/video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Title + host + progress bar overlaid at the video bottom.
-/// Reads [liveVideoConfigProvider] — rebuilds only on config changes.
 class VideoOverlayInfo extends ConsumerWidget {
   final LiveVideoConfig initialConfig;
 
@@ -16,11 +14,9 @@ class VideoOverlayInfo extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
     final config = ref.watch(liveVideoConfigProvider(initialConfig));
-    print("current: ${config.currentPosition}");
-    print("total: ${config.totalDuration}");
+    final progress = ref.watch(liveVideoProgressProvider(initialConfig));
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(),
       padding: EdgeInsets.fromLTRB(
         size.width * 0.04,
         size.height * 0.015,
@@ -38,16 +34,16 @@ class VideoOverlayInfo extends ConsumerWidget {
           VideoProgressBar(
             activeColor: Colors.red,
             inactiveColor: Colors.amber,
-            currentPosition: config.currentPosition,
-            totalDuration: config.totalDuration,
+            currentPosition: progress.position,
+            totalDuration: progress.total,
             isLive: config.isLive,
             onSeek: (ratio) {
-              // Update progress via notifier
-              final totalSecs = config.totalDuration.inSeconds;
+              final totalSecs = progress.total.inSeconds;
               final newPos = Duration(seconds: (ratio * totalSecs).round());
+              // ✅ Write to progress provider, not the old monolith
               ref
-                  .read(liveVideoProvider(initialConfig).notifier)
-                  .updateProgress(newPos);
+                  .read(liveVideoProgressProvider(initialConfig).notifier)
+                  .update(newPos);
             },
           ),
         ],

@@ -4,11 +4,7 @@ class AsyncState<T> {
   final T? data;
   final String? error;
 
-  const AsyncState({
-    this.isLoading = false,
-    this.data,
-    this.error,
-  });
+  const AsyncState({this.isLoading = false, this.data, this.error});
 
   AsyncState<T> copyWith({
     bool? isLoading,
@@ -19,7 +15,7 @@ class AsyncState<T> {
     return AsyncState(
       isLoading: isLoading ?? this.isLoading,
       data: clearData ? null : (data ?? this.data),
-      error: error,
+      error: error ?? this.error,
     );
   }
 }

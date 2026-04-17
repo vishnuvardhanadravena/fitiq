@@ -45,10 +45,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     );
 
     _logoOpacity = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _logoController,
-        curve: const Interval(0.0, 0.3),
-      ),
+      CurvedAnimation(parent: _logoController, curve: const Interval(0.0, 0.3)),
     );
 
     /// TEXT
@@ -67,10 +64,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     ).animate(CurvedAnimation(parent: _textController, curve: Curves.easeOut));
 
     _textOpacity = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _textController,
-        curve: const Interval(0.0, 0.4),
-      ),
+      CurvedAnimation(parent: _textController, curve: const Interval(0.0, 0.4)),
     );
 
     /// TAGLINE
@@ -106,9 +100,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final isFirstTime = prefs.getBool('isFirstTime') ?? true;
     final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     if (isFirstTime) {
-      context.go(RouteList.onboarding);
+      context.go(RouteList.login);
     } else if (token != null && token.isNotEmpty && isLoggedIn == true) {
-      context.go(RouteList.home);
+      context.go(RouteList.stepscreens);
     } else {
       context.go(RouteList.login);
     }

@@ -9,47 +9,52 @@ part of 'live_video_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(LiveVideoNotifier)
-final liveVideoProvider = LiveVideoNotifierFamily._();
+@ProviderFor(LiveVideoProgress)
+final liveVideoProgressProvider = LiveVideoProgressFamily._();
 
-final class LiveVideoNotifierProvider
-    extends $NotifierProvider<LiveVideoNotifier, LiveVideoState> {
-  LiveVideoNotifierProvider._({
-    required LiveVideoNotifierFamily super.from,
+final class LiveVideoProgressProvider
+    extends
+        $NotifierProvider<
+          LiveVideoProgress,
+          ({Duration position, Duration total})
+        > {
+  LiveVideoProgressProvider._({
+    required LiveVideoProgressFamily super.from,
     required LiveVideoConfig super.argument,
   }) : super(
          retry: null,
-         name: r'liveVideoProvider',
+         name: r'liveVideoProgressProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$liveVideoNotifierHash();
+  String debugGetCreateSourceHash() => _$liveVideoProgressHash();
 
   @override
   String toString() {
-    return r'liveVideoProvider'
+    return r'liveVideoProgressProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  LiveVideoNotifier create() => LiveVideoNotifier();
+  LiveVideoProgress create() => LiveVideoProgress();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(LiveVideoState value) {
+  Override overrideWithValue(({Duration position, Duration total}) value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<LiveVideoState>(value),
+      providerOverride:
+          $SyncValueProvider<({Duration position, Duration total})>(value),
     );
   }
 
   @override
   bool operator ==(Object other) {
-    return other is LiveVideoNotifierProvider && other.argument == argument;
+    return other is LiveVideoProgressProvider && other.argument == argument;
   }
 
   @override
@@ -58,47 +63,56 @@ final class LiveVideoNotifierProvider
   }
 }
 
-String _$liveVideoNotifierHash() => r'9334a02b0b8540809c9082b6ecf0317d46bd359a';
+String _$liveVideoProgressHash() => r'c00d1e7a1b3733a94f8ca9d8a9e793f5289bc34b';
 
-final class LiveVideoNotifierFamily extends $Family
+final class LiveVideoProgressFamily extends $Family
     with
         $ClassFamilyOverride<
-          LiveVideoNotifier,
-          LiveVideoState,
-          LiveVideoState,
-          LiveVideoState,
+          LiveVideoProgress,
+          ({Duration position, Duration total}),
+          ({Duration position, Duration total}),
+          ({Duration position, Duration total}),
           LiveVideoConfig
         > {
-  LiveVideoNotifierFamily._()
+  LiveVideoProgressFamily._()
     : super(
         retry: null,
-        name: r'liveVideoProvider',
+        name: r'liveVideoProgressProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  LiveVideoNotifierProvider call(LiveVideoConfig config) =>
-      LiveVideoNotifierProvider._(argument: config, from: this);
+  LiveVideoProgressProvider call(LiveVideoConfig config) =>
+      LiveVideoProgressProvider._(argument: config, from: this);
 
   @override
-  String toString() => r'liveVideoProvider';
+  String toString() => r'liveVideoProgressProvider';
 }
 
-abstract class _$LiveVideoNotifier extends $Notifier<LiveVideoState> {
+abstract class _$LiveVideoProgress
+    extends $Notifier<({Duration position, Duration total})> {
   late final _$args = ref.$arg as LiveVideoConfig;
   LiveVideoConfig get config => _$args;
 
-  LiveVideoState build(LiveVideoConfig config);
+  ({Duration position, Duration total}) build(LiveVideoConfig config);
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<LiveVideoState, LiveVideoState>;
+    final ref =
+        this.ref
+            as $Ref<
+              ({Duration position, Duration total}),
+              ({Duration position, Duration total})
+            >;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<LiveVideoState, LiveVideoState>,
-              LiveVideoState,
+              AnyNotifier<
+                ({Duration position, Duration total}),
+                ({Duration position, Duration total})
+              >,
+              ({Duration position, Duration total}),
               Object?,
               Object?
             >;
@@ -106,22 +120,11 @@ abstract class _$LiveVideoNotifier extends $Notifier<LiveVideoState> {
   }
 }
 
-/// Only the messages list — ChatPanel rebuilds on new messages only.
-
-@ProviderFor(liveVideoMessages)
+@ProviderFor(LiveVideoMessages)
 final liveVideoMessagesProvider = LiveVideoMessagesFamily._();
 
-/// Only the messages list — ChatPanel rebuilds on new messages only.
-
 final class LiveVideoMessagesProvider
-    extends
-        $FunctionalProvider<
-          List<ChatMessage>,
-          List<ChatMessage>,
-          List<ChatMessage>
-        >
-    with $Provider<List<ChatMessage>> {
-  /// Only the messages list — ChatPanel rebuilds on new messages only.
+    extends $NotifierProvider<LiveVideoMessages, List<ChatMessage>> {
   LiveVideoMessagesProvider._({
     required LiveVideoMessagesFamily super.from,
     required LiveVideoConfig super.argument,
@@ -145,15 +148,7 @@ final class LiveVideoMessagesProvider
 
   @$internal
   @override
-  $ProviderElement<List<ChatMessage>> $createElement(
-    $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
-
-  @override
-  List<ChatMessage> create(Ref ref) {
-    final argument = this.argument as LiveVideoConfig;
-    return liveVideoMessages(ref, argument);
-  }
+  LiveVideoMessages create() => LiveVideoMessages();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(List<ChatMessage> value) {
@@ -174,12 +169,17 @@ final class LiveVideoMessagesProvider
   }
 }
 
-String _$liveVideoMessagesHash() => r'd2e144a7caa384f0666fe25dc4e548612f65853d';
-
-/// Only the messages list — ChatPanel rebuilds on new messages only.
+String _$liveVideoMessagesHash() => r'512c00f7b738b1ee9fb3934db407d369fddd18f9';
 
 final class LiveVideoMessagesFamily extends $Family
-    with $FunctionalFamilyOverride<List<ChatMessage>, LiveVideoConfig> {
+    with
+        $ClassFamilyOverride<
+          LiveVideoMessages,
+          List<ChatMessage>,
+          List<ChatMessage>,
+          List<ChatMessage>,
+          LiveVideoConfig
+        > {
   LiveVideoMessagesFamily._()
     : super(
         retry: null,
@@ -189,8 +189,6 @@ final class LiveVideoMessagesFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Only the messages list — ChatPanel rebuilds on new messages only.
-
   LiveVideoMessagesProvider call(LiveVideoConfig config) =>
       LiveVideoMessagesProvider._(argument: config, from: this);
 
@@ -198,17 +196,235 @@ final class LiveVideoMessagesFamily extends $Family
   String toString() => r'liveVideoMessagesProvider';
 }
 
-/// Only the chat-open flag — VideoActionBar rebuilds on toggle only.
+abstract class _$LiveVideoMessages extends $Notifier<List<ChatMessage>> {
+  late final _$args = ref.$arg as LiveVideoConfig;
+  LiveVideoConfig get config => _$args;
+
+  List<ChatMessage> build(LiveVideoConfig config);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<List<ChatMessage>, List<ChatMessage>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<List<ChatMessage>, List<ChatMessage>>,
+              List<ChatMessage>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
+  }
+}
+
+@ProviderFor(LiveVideoControls)
+final liveVideoControlsProvider = LiveVideoControlsFamily._();
+
+final class LiveVideoControlsProvider
+    extends $NotifierProvider<LiveVideoControls, LiveVideoControlsState> {
+  LiveVideoControlsProvider._({
+    required LiveVideoControlsFamily super.from,
+    required LiveVideoConfig super.argument,
+  }) : super(
+         retry: null,
+         name: r'liveVideoControlsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$liveVideoControlsHash();
+
+  @override
+  String toString() {
+    return r'liveVideoControlsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  LiveVideoControls create() => LiveVideoControls();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(LiveVideoControlsState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<LiveVideoControlsState>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is LiveVideoControlsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$liveVideoControlsHash() => r'5e0b2c16d0482bc68a80ed50c04b8ea525cee83d';
+
+final class LiveVideoControlsFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          LiveVideoControls,
+          LiveVideoControlsState,
+          LiveVideoControlsState,
+          LiveVideoControlsState,
+          LiveVideoConfig
+        > {
+  LiveVideoControlsFamily._()
+    : super(
+        retry: null,
+        name: r'liveVideoControlsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  LiveVideoControlsProvider call(LiveVideoConfig config) =>
+      LiveVideoControlsProvider._(argument: config, from: this);
+
+  @override
+  String toString() => r'liveVideoControlsProvider';
+}
+
+abstract class _$LiveVideoControls extends $Notifier<LiveVideoControlsState> {
+  late final _$args = ref.$arg as LiveVideoConfig;
+  LiveVideoConfig get config => _$args;
+
+  LiveVideoControlsState build(LiveVideoConfig config);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<LiveVideoControlsState, LiveVideoControlsState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<LiveVideoControlsState, LiveVideoControlsState>,
+              LiveVideoControlsState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
+  }
+}
+
+@ProviderFor(LiveVideoConfigNotifier)
+final liveVideoConfigProvider = LiveVideoConfigNotifierFamily._();
+
+final class LiveVideoConfigNotifierProvider
+    extends $NotifierProvider<LiveVideoConfigNotifier, LiveVideoConfig> {
+  LiveVideoConfigNotifierProvider._({
+    required LiveVideoConfigNotifierFamily super.from,
+    required LiveVideoConfig super.argument,
+  }) : super(
+         retry: null,
+         name: r'liveVideoConfigProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$liveVideoConfigNotifierHash();
+
+  @override
+  String toString() {
+    return r'liveVideoConfigProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  LiveVideoConfigNotifier create() => LiveVideoConfigNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(LiveVideoConfig value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<LiveVideoConfig>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is LiveVideoConfigNotifierProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$liveVideoConfigNotifierHash() =>
+    r'6549311abb746d5c2f164ed1051b977c84726137';
+
+final class LiveVideoConfigNotifierFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          LiveVideoConfigNotifier,
+          LiveVideoConfig,
+          LiveVideoConfig,
+          LiveVideoConfig,
+          LiveVideoConfig
+        > {
+  LiveVideoConfigNotifierFamily._()
+    : super(
+        retry: null,
+        name: r'liveVideoConfigProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  LiveVideoConfigNotifierProvider call(LiveVideoConfig config) =>
+      LiveVideoConfigNotifierProvider._(argument: config, from: this);
+
+  @override
+  String toString() => r'liveVideoConfigProvider';
+}
+
+abstract class _$LiveVideoConfigNotifier extends $Notifier<LiveVideoConfig> {
+  late final _$args = ref.$arg as LiveVideoConfig;
+  LiveVideoConfig get config => _$args;
+
+  LiveVideoConfig build(LiveVideoConfig config);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<LiveVideoConfig, LiveVideoConfig>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<LiveVideoConfig, LiveVideoConfig>,
+              LiveVideoConfig,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
+  }
+}
+
+/// Chat open flag — AnimationController in LiveVideoScreen
 
 @ProviderFor(liveVideoChatOpen)
 final liveVideoChatOpenProvider = LiveVideoChatOpenFamily._();
 
-/// Only the chat-open flag — VideoActionBar rebuilds on toggle only.
+/// Chat open flag — AnimationController in LiveVideoScreen
 
 final class LiveVideoChatOpenProvider
     extends $FunctionalProvider<bool, bool, bool>
     with $Provider<bool> {
-  /// Only the chat-open flag — VideoActionBar rebuilds on toggle only.
+  /// Chat open flag — AnimationController in LiveVideoScreen
   LiveVideoChatOpenProvider._({
     required LiveVideoChatOpenFamily super.from,
     required LiveVideoConfig super.argument,
@@ -260,9 +476,9 @@ final class LiveVideoChatOpenProvider
   }
 }
 
-String _$liveVideoChatOpenHash() => r'84ff698874b2b7be060cf0aa3b7374bc1bf60e07';
+String _$liveVideoChatOpenHash() => r'3eb9858da0ef706dfc7a1031a0921020c119e811';
 
-/// Only the chat-open flag — VideoActionBar rebuilds on toggle only.
+/// Chat open flag — AnimationController in LiveVideoScreen
 
 final class LiveVideoChatOpenFamily extends $Family
     with $FunctionalFamilyOverride<bool, LiveVideoConfig> {
@@ -275,7 +491,7 @@ final class LiveVideoChatOpenFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Only the chat-open flag — VideoActionBar rebuilds on toggle only.
+  /// Chat open flag — AnimationController in LiveVideoScreen
 
   LiveVideoChatOpenProvider call(LiveVideoConfig config) =>
       LiveVideoChatOpenProvider._(argument: config, from: this);
@@ -284,17 +500,17 @@ final class LiveVideoChatOpenFamily extends $Family
   String toString() => r'liveVideoChatOpenProvider';
 }
 
-/// Only mute state.
+/// Mute flag — mic button in VideoActionBar
 
 @ProviderFor(liveVideoIsMuted)
 final liveVideoIsMutedProvider = LiveVideoIsMutedFamily._();
 
-/// Only mute state.
+/// Mute flag — mic button in VideoActionBar
 
 final class LiveVideoIsMutedProvider
     extends $FunctionalProvider<bool, bool, bool>
     with $Provider<bool> {
-  /// Only mute state.
+  /// Mute flag — mic button in VideoActionBar
   LiveVideoIsMutedProvider._({
     required LiveVideoIsMutedFamily super.from,
     required LiveVideoConfig super.argument,
@@ -346,9 +562,9 @@ final class LiveVideoIsMutedProvider
   }
 }
 
-String _$liveVideoIsMutedHash() => r'a6e6e081002dbc192b5d1067069c42c652ed77fe';
+String _$liveVideoIsMutedHash() => r'fad8469b40586b093904cb410e091b7a4b83993e';
 
-/// Only mute state.
+/// Mute flag — mic button in VideoActionBar
 
 final class LiveVideoIsMutedFamily extends $Family
     with $FunctionalFamilyOverride<bool, LiveVideoConfig> {
@@ -361,7 +577,7 @@ final class LiveVideoIsMutedFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Only mute state.
+  /// Mute flag — mic button in VideoActionBar
 
   LiveVideoIsMutedProvider call(LiveVideoConfig config) =>
       LiveVideoIsMutedProvider._(argument: config, from: this);
@@ -370,17 +586,17 @@ final class LiveVideoIsMutedFamily extends $Family
   String toString() => r'liveVideoIsMutedProvider';
 }
 
-/// Only camera-off state.
+/// Camera flag — camera button in VideoActionBar
 
 @ProviderFor(liveVideoIsCameraOff)
 final liveVideoIsCameraOffProvider = LiveVideoIsCameraOffFamily._();
 
-/// Only camera-off state.
+/// Camera flag — camera button in VideoActionBar
 
 final class LiveVideoIsCameraOffProvider
     extends $FunctionalProvider<bool, bool, bool>
     with $Provider<bool> {
-  /// Only camera-off state.
+  /// Camera flag — camera button in VideoActionBar
   LiveVideoIsCameraOffProvider._({
     required LiveVideoIsCameraOffFamily super.from,
     required LiveVideoConfig super.argument,
@@ -433,9 +649,9 @@ final class LiveVideoIsCameraOffProvider
 }
 
 String _$liveVideoIsCameraOffHash() =>
-    r'95ed7f6934b41dd9f2436e19749fb9c3238fc93e';
+    r'51ba827a7ced30726a94cbd20f58d46405729af7';
 
-/// Only camera-off state.
+/// Camera flag — camera button in VideoActionBar
 
 final class LiveVideoIsCameraOffFamily extends $Family
     with $FunctionalFamilyOverride<bool, LiveVideoConfig> {
@@ -448,7 +664,7 @@ final class LiveVideoIsCameraOffFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Only camera-off state.
+  /// Camera flag — camera button in VideoActionBar
 
   LiveVideoIsCameraOffProvider call(LiveVideoConfig config) =>
       LiveVideoIsCameraOffProvider._(argument: config, from: this);
@@ -457,35 +673,134 @@ final class LiveVideoIsCameraOffFamily extends $Family
   String toString() => r'liveVideoIsCameraOffProvider';
 }
 
-/// Only the config (viewer count, progress) — VideoTopBar + VideoOverlayInfo.
+/// Progress tuple — ProgressBar only
 
-@ProviderFor(liveVideoConfig)
-final liveVideoConfigProvider = LiveVideoConfigFamily._();
+@ProviderFor(liveVideoProgressState)
+final liveVideoProgressStateProvider = LiveVideoProgressStateFamily._();
 
-/// Only the config (viewer count, progress) — VideoTopBar + VideoOverlayInfo.
+/// Progress tuple — ProgressBar only
 
-final class LiveVideoConfigProvider
+final class LiveVideoProgressStateProvider
     extends
-        $FunctionalProvider<LiveVideoConfig, LiveVideoConfig, LiveVideoConfig>
-    with $Provider<LiveVideoConfig> {
-  /// Only the config (viewer count, progress) — VideoTopBar + VideoOverlayInfo.
-  LiveVideoConfigProvider._({
-    required LiveVideoConfigFamily super.from,
+        $FunctionalProvider<
+          ({Duration position, Duration total}),
+          ({Duration position, Duration total}),
+          ({Duration position, Duration total})
+        >
+    with $Provider<({Duration position, Duration total})> {
+  /// Progress tuple — ProgressBar only
+  LiveVideoProgressStateProvider._({
+    required LiveVideoProgressStateFamily super.from,
     required LiveVideoConfig super.argument,
   }) : super(
          retry: null,
-         name: r'liveVideoConfigProvider',
+         name: r'liveVideoProgressStateProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$liveVideoConfigHash();
+  String debugGetCreateSourceHash() => _$liveVideoProgressStateHash();
 
   @override
   String toString() {
-    return r'liveVideoConfigProvider'
+    return r'liveVideoProgressStateProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<({Duration position, Duration total})> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ({Duration position, Duration total}) create(Ref ref) {
+    final argument = this.argument as LiveVideoConfig;
+    return liveVideoProgressState(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(({Duration position, Duration total}) value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride:
+          $SyncValueProvider<({Duration position, Duration total})>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is LiveVideoProgressStateProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$liveVideoProgressStateHash() =>
+    r'a55ca8bb8c28af33e0ba50a323e5d7d230eed60e';
+
+/// Progress tuple — ProgressBar only
+
+final class LiveVideoProgressStateFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          ({Duration position, Duration total}),
+          LiveVideoConfig
+        > {
+  LiveVideoProgressStateFamily._()
+    : super(
+        retry: null,
+        name: r'liveVideoProgressStateProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Progress tuple — ProgressBar only
+
+  LiveVideoProgressStateProvider call(LiveVideoConfig config) =>
+      LiveVideoProgressStateProvider._(argument: config, from: this);
+
+  @override
+  String toString() => r'liveVideoProgressStateProvider';
+}
+
+/// Config snapshot — VideoTopBar / VideoOverlayInfo
+
+@ProviderFor(liveVideoConfigState)
+final liveVideoConfigStateProvider = LiveVideoConfigStateFamily._();
+
+/// Config snapshot — VideoTopBar / VideoOverlayInfo
+
+final class LiveVideoConfigStateProvider
+    extends
+        $FunctionalProvider<LiveVideoConfig, LiveVideoConfig, LiveVideoConfig>
+    with $Provider<LiveVideoConfig> {
+  /// Config snapshot — VideoTopBar / VideoOverlayInfo
+  LiveVideoConfigStateProvider._({
+    required LiveVideoConfigStateFamily super.from,
+    required LiveVideoConfig super.argument,
+  }) : super(
+         retry: null,
+         name: r'liveVideoConfigStateProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$liveVideoConfigStateHash();
+
+  @override
+  String toString() {
+    return r'liveVideoConfigStateProvider'
         ''
         '($argument)';
   }
@@ -498,7 +813,7 @@ final class LiveVideoConfigProvider
   @override
   LiveVideoConfig create(Ref ref) {
     final argument = this.argument as LiveVideoConfig;
-    return liveVideoConfig(ref, argument);
+    return liveVideoConfigState(ref, argument);
   }
 
   /// {@macro riverpod.override_with_value}
@@ -511,7 +826,7 @@ final class LiveVideoConfigProvider
 
   @override
   bool operator ==(Object other) {
-    return other is LiveVideoConfigProvider && other.argument == argument;
+    return other is LiveVideoConfigStateProvider && other.argument == argument;
   }
 
   @override
@@ -520,26 +835,120 @@ final class LiveVideoConfigProvider
   }
 }
 
-String _$liveVideoConfigHash() => r'428efd07862804c48a5351cd0ec903c29e3cd1b6';
+String _$liveVideoConfigStateHash() =>
+    r'1368b10c1d69fffbdca69e70f050e79dd8d03838';
 
-/// Only the config (viewer count, progress) — VideoTopBar + VideoOverlayInfo.
+/// Config snapshot — VideoTopBar / VideoOverlayInfo
 
-final class LiveVideoConfigFamily extends $Family
+final class LiveVideoConfigStateFamily extends $Family
     with $FunctionalFamilyOverride<LiveVideoConfig, LiveVideoConfig> {
-  LiveVideoConfigFamily._()
+  LiveVideoConfigStateFamily._()
     : super(
         retry: null,
-        name: r'liveVideoConfigProvider',
+        name: r'liveVideoConfigStateProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  /// Only the config (viewer count, progress) — VideoTopBar + VideoOverlayInfo.
+  /// Config snapshot — VideoTopBar / VideoOverlayInfo
 
-  LiveVideoConfigProvider call(LiveVideoConfig config) =>
-      LiveVideoConfigProvider._(argument: config, from: this);
+  LiveVideoConfigStateProvider call(LiveVideoConfig config) =>
+      LiveVideoConfigStateProvider._(argument: config, from: this);
 
   @override
-  String toString() => r'liveVideoConfigProvider';
+  String toString() => r'liveVideoConfigStateProvider';
+}
+
+/// Messages list — ChatPanel / LiveMessagesOverlay
+
+@ProviderFor(liveVideoMessagesList)
+final liveVideoMessagesListProvider = LiveVideoMessagesListFamily._();
+
+/// Messages list — ChatPanel / LiveMessagesOverlay
+
+final class LiveVideoMessagesListProvider
+    extends
+        $FunctionalProvider<
+          List<ChatMessage>,
+          List<ChatMessage>,
+          List<ChatMessage>
+        >
+    with $Provider<List<ChatMessage>> {
+  /// Messages list — ChatPanel / LiveMessagesOverlay
+  LiveVideoMessagesListProvider._({
+    required LiveVideoMessagesListFamily super.from,
+    required LiveVideoConfig super.argument,
+  }) : super(
+         retry: null,
+         name: r'liveVideoMessagesListProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$liveVideoMessagesListHash();
+
+  @override
+  String toString() {
+    return r'liveVideoMessagesListProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<List<ChatMessage>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  List<ChatMessage> create(Ref ref) {
+    final argument = this.argument as LiveVideoConfig;
+    return liveVideoMessagesList(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<ChatMessage> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<ChatMessage>>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is LiveVideoMessagesListProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$liveVideoMessagesListHash() =>
+    r'dc4586a3aafdaa8d99199fc8652ecd4aa616f10c';
+
+/// Messages list — ChatPanel / LiveMessagesOverlay
+
+final class LiveVideoMessagesListFamily extends $Family
+    with $FunctionalFamilyOverride<List<ChatMessage>, LiveVideoConfig> {
+  LiveVideoMessagesListFamily._()
+    : super(
+        retry: null,
+        name: r'liveVideoMessagesListProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Messages list — ChatPanel / LiveMessagesOverlay
+
+  LiveVideoMessagesListProvider call(LiveVideoConfig config) =>
+      LiveVideoMessagesListProvider._(argument: config, from: this);
+
+  @override
+  String toString() => r'liveVideoMessagesListProvider';
 }

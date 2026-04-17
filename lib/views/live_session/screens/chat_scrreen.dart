@@ -7,13 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/chat_message.dart';
 
-/// Full-screen chat view opened via "View All".
-/// Reads messages from [liveVideoMessagesProvider] so it stays in sync
-/// with the overlay chat — same notifier, same source of truth.
 class FullChatScreen extends ConsumerStatefulWidget {
   final LiveVideoConfig config;
-
-  /// Optional seed messages when navigating without an active notifier.
   final List<ChatMessage> messages;
   final String title;
 
@@ -24,7 +19,6 @@ class FullChatScreen extends ConsumerStatefulWidget {
     this.title = 'Live Chat',
   });
 
-  /// Push helper. Pass [config] so the screen shares the same Riverpod state.
   static Future<void> show(
     BuildContext context, {
     required LiveVideoConfig config,
@@ -68,10 +62,10 @@ class _FullChatScreenState extends ConsumerState<FullChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Reads from the same provider as ChatPanel — stays synced automatically
+    // ✅ Use new granular messages provider
     final messages = ref.watch(liveVideoMessagesProvider(widget.config));
 
-    // Auto-scroll on new message
+    // ✅ Auto-scroll on new message
     ref.listen(liveVideoMessagesProvider(widget.config), (_, __) {
       _scrollToBottom();
     });
@@ -117,7 +111,8 @@ class _FullChatScreenState extends ConsumerState<FullChatScreen> {
           ),
           ChatInputBar(
             onSend: (text) => ref
-                .read(liveVideoProvider(widget.config).notifier)
+                // ✅ Use new messages notifier directly
+                .read(liveVideoMessagesProvider(widget.config).notifier)
                 .sendMessage(text),
           ),
         ],

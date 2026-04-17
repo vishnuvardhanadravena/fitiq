@@ -1,3 +1,4 @@
+import 'package:fitiq/core/theame/app_colors.dart';
 import 'package:fitiq/core/theame/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,264 +8,223 @@ class EnrollmentSuccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double screenHeight = MediaQuery.of(context).size.height;
-    final double screenWidth = MediaQuery.of(context).size.width;
-
-    // Dynamic scale factors
-    final double vh = screenHeight / 100; // 1% of screen height
-    final double vw = screenWidth / 100; // 1% of screen width
-
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF2196F3), Color(0xFF1565C0), Color(0xFF1A237E)],
-            stops: [0.0, 0.5, 1.0],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: vw * 6),
-              child: Column(
-                children: [
-                  SizedBox(height: vh * 5.5),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final w = constraints.maxWidth;
+          final h = constraints.maxHeight;
 
-                  // Success check circle
-                  Container(
-                    width: vw * 20,
-                    height: vw * 20,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
-                          blurRadius: vw * 5,
-                          offset: Offset(0, vh * 0.8),
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.check,
-                      color: const Color(0xFFE91E63),
-                      size: vw * 10,
-                    ),
-                  ),
+          final isTab = w > 600;
 
-                  SizedBox(height: vh * 2.8),
+          /// 🔥 dynamic scaling
+          final padding = isTab ? 40.0 : 16.0;
+          final iconSize = isTab ? 80.0 : 60.0;
+          final titleSize = isTab ? 28.0 : 22.0;
+          final subTitleSize = isTab ? 16.0 : 13.0;
+          final cardWidth = isTab ? 500.0 : double.infinity;
 
-                  // Enrollment Successful title
-                  Text(
-                    'Enrollment Successful!',
-                    style: AppTextStyles.heading.copyWith(
-                      color: Colors.white,
-                      fontSize: vw * 6.5,
-                      fontWeight: FontWeight.bold,
-                      // letterSpacing: 0.3,
-                    ),
-                    //  TextStyle(
-                    //   color: Colors.white,
-                    //   fontSize: vw * 6.5,
-                    //   fontWeight: FontWeight.bold,
-                    //   letterSpacing: 0.3,
-                    // ),
-                  ),
-
-                  SizedBox(height: vh * 1.2),
-
-                  // Subtitle
-                  Text(
-                    "You're officially enrolled in the\n90 Days Total Transformation Program.",
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.subheading.copyWith(
-                      color: Colors.white70,
-                      fontSize: vw * 3.6,
-                      height: 1.5,
-                    ),
-                    //  TextStyle(
-                    //   color: Colors.white70,
-                    //   fontSize: vw * 3.6,
-                    //   height: 1.5,
-                    // ),
-                  ),
-
-                  SizedBox(height: vh * 4),
-
-                  // White card
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(vw * 4),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.12),
-                          blurRadius: vw * 6,
-                          offset: Offset(0, vh * 0.8),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(vw * 6),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Card title
-                          Text(
-                            '90 Days Total Transformation',
-                            style: AppTextStyles.heading.copyWith(
-                              color: const Color(0xFF1565C0),
-                              fontSize: vw * 4,
-                              fontWeight: FontWeight.bold,
-                              // letterSpacing: 0.3,
-                            ),
-                            //  TextStyle(
-                            //   color: const Color(0xFF1565C0),
-                            //   fontSize: vw * 4,
-                            //   fontWeight: FontWeight.bold,
-                            // ),
-                          ),
-
-                          SizedBox(height: vh * 2.2),
-
-                          // Divider line
-                          Container(height: 1, color: const Color(0xFFEEEEEE)),
-
-                          SizedBox(height: vh * 1.8),
-
-                          // Transaction details rows
-                          _DetailRow(
-                            label: 'Transaction ID:',
-                            value: '#FITIQ34892',
-                            valueBold: true,
-                            fontSize: vw * 3.5,
-                          ),
-                          SizedBox(height: vh * 1.6),
-                          _DetailRow(
-                            label: 'Payment Mode:',
-                            value: 'UPI',
-                            valueBold: true,
-                            fontSize: vw * 3.5,
-                          ),
-                          SizedBox(height: vh * 1.6),
-                          _DetailRow(
-                            label: 'Amount Paid:',
-                            value: '₹4,499',
-                            valueBold: true,
-                            fontSize: vw * 3.5,
-                          ),
-                          SizedBox(height: vh * 1.6),
-                          _DetailRow(
-                            label: 'Start Date:',
-                            value: 'Today',
-                            valueBold: true,
-                            fontSize: vw * 3.5,
-                          ),
-
-                          SizedBox(height: vh * 2.h),
-
-                          // Help text
-                          Center(
-                            child: Text(
-                              'Need help? Contact support@fitiq.in',
-                              style: AppTextStyles.caption,
-                              // TextStyle(
-                              //   color: const Color(0xFF9E9E9E),
-                              //   fontSize: vw * 3.1,
-                              // ),
-                            ),
-                          ),
-
-                          SizedBox(height: vh * 2.2.h),
-
-                          // Go To My Program button
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            height: vh * 6.1,
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFE91E63),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(vw * 8),
-                                ),
-                                elevation: 4,
-                                shadowColor: const Color(
-                                  0xFFE91E63,
-                                ).withOpacity(0.4),
-                              ),
-                              child: Text(
-                                'Go To My Program',
-                                style: AppTextStyles.button.copyWith(
-                                  fontSize: vw * 3.6,
-                                ),
-                                //  TextStyle(
-                                //   fontSize: vw * 4,
-                                //   fontWeight: FontWeight.w600,
-                                //   letterSpacing: 0.3,
-                                // ),
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(height: vh * 1.0.h),
-
-                          // View Invoice link
-                          Center(
-                            child: GestureDetector(
-                              onTap: () {},
-                              child: Text(
-                                'View Invoice',
-                                style: TextStyle(
-                                  color: const Color(0xFF2196F3),
-                                  fontSize: vw * 3.6,
-                                  fontWeight: FontWeight.w500,
-                                  decoration: TextDecoration.none,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(height: vh * 1.0),
-
-                          // Bottom divider
-                          Container(height: 1, color: const Color(0xFFEEEEEE)),
-
-                          SizedBox(height: vh * 1.0),
-
-                          // Tagline
-                          Center(
-                            child: Text(
-                              'Your transformation starts today. Stay consistent.',
-                              textAlign: TextAlign.center,
-                              style: AppTextStyles.caption.copyWith(
-                                color: const Color(0xFF9E9E9E),
-                                fontSize: vw * 3.1,
-                              ),
-                              //  TextStyle(
-                              //   color: const Color(0xFFBDBDBD),
-                              //   fontSize: vw * 3,
-                              //   fontStyle: FontStyle.italic,
-                              // ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: vh * 5),
+          return Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF2196F3),
+                  Color(0xFF1565C0),
+                  Color(0xFF1A237E),
                 ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
             ),
-          ),
-        ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: padding),
+                  child: Column(
+                    children: [
+                      SizedBox(height: h * 0.05),
+
+                      /// ✅ ICON
+                      Container(
+                        width: iconSize,
+                        height: iconSize,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              blurRadius: 10,
+                              color: Colors.black.withValues(alpha: 0.2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.check,
+                          color: const Color(0xFFE91E63),
+                          size: iconSize * 0.5,
+                        ),
+                      ),
+
+                      SizedBox(height: h * 0.03),
+
+                      /// ✅ TITLE
+                      Text(
+                        'Enrollment Successful!',
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.heading.copyWith(
+                          color: Colors.white,
+                          fontSize: titleSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      SizedBox(height: 10),
+
+                      /// ✅ SUBTITLE
+                      Text(
+                        "You're officially enrolled in the\n90 Days Total Transformation Program.",
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.subheading.copyWith(
+                          color: Colors.white70,
+                          fontSize: subTitleSize,
+                        ),
+                      ),
+
+                      SizedBox(height: h * 0.04),
+
+                      /// 🔥 CARD (responsive width)
+                      Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: cardWidth),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 12,
+                                  color: Colors.black.withValues(alpha: 0.15),
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(isTab ? 24 : 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  /// TITLE
+                                  Text(
+                                    '90 Days Total Transformation',
+                                    style: AppTextStyles.heading.copyWith(
+                                      color: const Color(0xFF1565C0),
+                                      fontSize: isTab ? 18 : 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 16),
+                                  const Divider(),
+
+                                  const SizedBox(height: 12),
+
+                                  /// DETAILS
+                                  _DetailRow(
+                                    label: 'Transaction ID:',
+                                    value: '#FITIQ34892',
+                                    isTab: isTab,
+                                  ),
+                                  _DetailRow(
+                                    label: 'Payment Mode:',
+                                    value: 'UPI',
+                                    isTab: isTab,
+                                  ),
+                                  _DetailRow(
+                                    label: 'Amount Paid:',
+                                    value: '₹4,499',
+                                    isTab: isTab,
+                                  ),
+                                  _DetailRow(
+                                    label: 'Start Date:',
+                                    value: 'Today',
+                                    isTab: isTab,
+                                  ),
+
+                                  const SizedBox(height: 20),
+
+                                  /// HELP TEXT
+                                  Center(
+                                    child: Text(
+                                      'Need help? Contact support@fitiq.in',
+                                      style: AppTextStyles.caption,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 20),
+
+                                  /// BUTTON
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 48,
+                                    child: ElevatedButton(
+                                      onPressed: () {},
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(
+                                          0xFFE91E63,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            30,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Go To My Program',
+                                        style: AppTextStyles.buttonTextStyle,
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 12),
+
+                                  /// LINK
+                                  Center(
+                                    child: Text(
+                                      'View Invoice',
+                                      style: AppTextStyles.link.copyWith(
+                                        color: AppColors.accentCyan,
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 12),
+                                  const Divider(),
+
+                                  const SizedBox(height: 10),
+
+                                  /// FOOTER
+                                  Center(
+                                    child: Text(
+                                      'Your transformation starts today. Stay consistent.',
+                                      textAlign: TextAlign.center,
+                                      style: AppTextStyles.caption,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: h * 0.05),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -273,38 +233,37 @@ class EnrollmentSuccessScreen extends StatelessWidget {
 class _DetailRow extends StatelessWidget {
   final String label;
   final String value;
-  final bool valueBold;
-  final double fontSize;
+  final bool isTab;
 
   const _DetailRow({
     required this.label,
     required this.value,
-    required this.fontSize,
-    this.valueBold = false,
+    required this.isTab,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: AppTextStyles.subheading.copyWith(
-            color: const Color(0xFF757575),
-            fontSize: fontSize,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: AppTextStyles.subheading.copyWith(
+              color: Colors.grey,
+              fontSize: isTab ? 14 : 12,
+            ),
           ),
-          //  TextStyle(color: const Color(0xFF757575), fontSize: fontSize),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            color: const Color(0xFF212121),
-            fontSize: fontSize,
-            fontWeight: valueBold ? FontWeight.w600 : FontWeight.normal,
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: isTab ? 14 : 12,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

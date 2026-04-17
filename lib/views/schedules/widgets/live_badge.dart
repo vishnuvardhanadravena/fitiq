@@ -12,7 +12,7 @@ class LiveBadge extends StatelessWidget {
         color: ScheduleColors.primaryLight,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: ScheduleColors.primary.withOpacity(0.3),
+          color: ScheduleColors.primary.withValues(alpha: 0.3),
         ),
       ),
       child: const Text(

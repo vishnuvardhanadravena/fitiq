@@ -1,87 +1,45 @@
 import 'package:fitiq/views/live_session/provider/live_video_config.dart';
-import 'package:fitiq/views/live_session/provider/live_video_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../models/chat_message.dart';
 
 part 'live_video_provider.g.dart';
 
-// ─────────────────────────────────────────────
-// LiveVideoNotifier
-// Single notifier that owns ALL screen state:
-//   • config (title, host, viewers, progress)
-//   • messages list
-//   • isMuted / isCameraOff / isChatOpen
-//
-// Pass [config] and optional [initialMessages]
-// via the provider family argument.
-// ─────────────────────────────────────────────
+@riverpod
+class LiveVideoProgress extends _$LiveVideoProgress {
+  @override
+  ({Duration position, Duration total}) build(LiveVideoConfig config) =>
+      (position: Duration.zero, total: Duration.zero);
+
+  void update(Duration position) =>
+      state = (position: position, total: state.total);
+
+  void updateTotal(Duration total) {
+    if (total == state.total) return; // no-op if unchanged
+    state = (position: state.position, total: total);
+  }
+}
 
 @riverpod
-class LiveVideoNotifier extends _$LiveVideoNotifier {
+class LiveVideoMessages extends _$LiveVideoMessages {
   @override
-  LiveVideoState build(LiveVideoConfig config) {
-    return LiveVideoState(config: config, messages: _demoMessages());
-  }
+  List<ChatMessage> build(LiveVideoConfig config) => _demoMessages();
 
-  // ── Chat ──────────────────────────────────
-
-  /// Add a message sent by the current user.
   void sendMessage(String text) {
     if (text.trim().isEmpty) return;
-    final msg = ChatMessage(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      senderName: 'You',
-      message: text.trim(),
-      timestamp: DateTime.now(),
-    );
-    state = state.copyWith(messages: [...state.messages, msg]);
-  }
-
-  /// Add a message received from a remote user (e.g. from socket/API).
-  void receiveMessage(ChatMessage msg) {
-    state = state.copyWith(messages: [...state.messages, msg]);
-  }
-
-  /// Bulk-load initial messages (e.g. after fetching history).
-  void loadMessages(List<ChatMessage> messages) {
-    state = state.copyWith(messages: messages);
-  }
-
-  // ── Controls ──────────────────────────────
-
-  void toggleMute() => state = state.copyWith(isMuted: !state.isMuted);
-
-  void toggleCamera() =>
-      state = state.copyWith(isCameraOff: !state.isCameraOff);
-
-  void toggleChat() => state = state.copyWith(isChatOpen: !state.isChatOpen);
-
-  void closeChat() => state = state.copyWith(isChatOpen: false);
-
-  void openChat() => state = state.copyWith(isChatOpen: true);
-
-  // ── Config updates (e.g. viewer count from socket) ──
-
-  void updateViewerCount(int count) {
-    state = state.copyWith(config: state.config.copyWith(viewerCount: count));
-  }
-
-  void updateProgress(Duration position) {
-    state = state.copyWith(
-      config: state.config.copyWith(
-        currentPosition: position,
-        totalDuration: state.config.totalDuration.inSeconds == 0
-            ? const Duration(minutes: 30) // fallback
-            : state.config.totalDuration,
+    state = [
+      ...state,
+      ChatMessage(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        senderName: 'You',
+        message: text.trim(),
+        timestamp: DateTime.now(),
       ),
-    );
+    ];
   }
 
-  void updateTotalDuration(Duration duration) {
-    state = state.copyWith(
-      config: state.config.copyWith(totalDuration: duration),
-    );
-  }
+  void receiveMessage(ChatMessage msg) => state = [...state, msg];
+
+  void loadMessages(List<ChatMessage> messages) => state = messages;
 
   List<ChatMessage> _demoMessages() => [
     ChatMessage(
@@ -99,32 +57,88 @@ class LiveVideoNotifier extends _$LiveVideoNotifier {
   ];
 }
 
-// ─the messages list — ChatPanel rebuilds on new messages only.
+typedef LiveVideoControlsState = ({
+  bool isMuted,
+  bool isCameraOff,
+  bool isChatOpen,
+});
+
 @riverpod
-List<ChatMessage> liveVideoMessages(Ref ref, LiveVideoConfig config) {
-  return ref.watch(liveVideoProvider(config)).messages;
+class LiveVideoControls extends _$LiveVideoControls {
+  @override
+  LiveVideoControlsState build(LiveVideoConfig config) =>
+      (isMuted: false, isCameraOff: false, isChatOpen: false);
+
+  void toggleMute() => state = (
+    isMuted: !state.isMuted,
+    isCameraOff: state.isCameraOff,
+    isChatOpen: state.isChatOpen,
+  );
+
+  void toggleCamera() => state = (
+    isMuted: state.isMuted,
+    isCameraOff: !state.isCameraOff,
+    isChatOpen: state.isChatOpen,
+  );
+
+  void toggleChat() => state = (
+    isMuted: state.isMuted,
+    isCameraOff: state.isCameraOff,
+    isChatOpen: !state.isChatOpen,
+  );
+
+  void openChat() => state = (
+    isMuted: state.isMuted,
+    isCameraOff: state.isCameraOff,
+    isChatOpen: true,
+  );
+
+  void closeChat() => state = (
+    isMuted: state.isMuted,
+    isCameraOff: state.isCameraOff,
+    isChatOpen: false,
+  );
 }
 
-/// Only the chat-open flag — VideoActionBar rebuilds on toggle only.
 @riverpod
-bool liveVideoChatOpen(Ref ref, LiveVideoConfig config) {
-  return ref.watch(liveVideoProvider(config)).isChatOpen;
+class LiveVideoConfigNotifier extends _$LiveVideoConfigNotifier {
+  @override
+  LiveVideoConfig build(LiveVideoConfig config) => config;
+
+  void updateViewerCount(int count) =>
+      state = state.copyWith(viewerCount: count);
+
+  void updateTitle(String title) => state = state.copyWith(title: title);
 }
 
-/// Only mute state.
+/// Chat open flag — AnimationController in LiveVideoScreen
 @riverpod
-bool liveVideoIsMuted(Ref ref, LiveVideoConfig config) {
-  return ref.watch(liveVideoProvider(config)).isMuted;
-}
+bool liveVideoChatOpen(Ref ref, LiveVideoConfig config) =>
+    ref.watch(liveVideoControlsProvider(config)).isChatOpen;
 
-/// Only camera-off state.
+/// Mute flag — mic button in VideoActionBar
 @riverpod
-bool liveVideoIsCameraOff(Ref ref, LiveVideoConfig config) {
-  return ref.watch(liveVideoProvider(config)).isCameraOff;
-}
+bool liveVideoIsMuted(Ref ref, LiveVideoConfig config) =>
+    ref.watch(liveVideoControlsProvider(config)).isMuted;
 
-/// Only the config (viewer count, progress) — VideoTopBar + VideoOverlayInfo.
+/// Camera flag — camera button in VideoActionBar
 @riverpod
-LiveVideoConfig liveVideoConfig(Ref ref, LiveVideoConfig config) {
-  return ref.watch(liveVideoProvider(config)).config;
-}
+bool liveVideoIsCameraOff(Ref ref, LiveVideoConfig config) =>
+    ref.watch(liveVideoControlsProvider(config)).isCameraOff;
+
+/// Progress tuple — ProgressBar only
+@riverpod
+({Duration position, Duration total}) liveVideoProgressState(
+  Ref ref,
+  LiveVideoConfig config,
+) => ref.watch(liveVideoProgressProvider(config));
+
+/// Config snapshot — VideoTopBar / VideoOverlayInfo
+@riverpod
+LiveVideoConfig liveVideoConfigState(Ref ref, LiveVideoConfig config) =>
+    ref.watch(liveVideoConfigProvider(config));
+
+/// Messages list — ChatPanel / LiveMessagesOverlay
+@riverpod
+List<ChatMessage> liveVideoMessagesList(Ref ref, LiveVideoConfig config) =>
+    ref.watch(liveVideoMessagesProvider(config));

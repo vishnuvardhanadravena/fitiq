@@ -135,25 +135,9 @@ class BackgroundContainer extends StatelessWidget {
       } else if (backgroundColor != null) {
         resolvedColor = backgroundColor;
       } else {
-        // Default: blue gradient (matches your design)
-        //   resolvedGradient =
-        //  LinearGradient(
-        //     begin: Alignment.centerLeft, // 🔥 start from left
-        //     end: Alignment.centerRight, // 🔥 end at right
-        //     colors: [
-        //       const Color(0xFF2E3192),
-        //       // add opacity for smoother blend
-        //       const Color(0xFF00AEEF),
-        //       // const Color(0xFF00AEEF).withValues(alpha: 0.8)
-        //     ],
-        //   );
-
         resolvedGradient = LinearGradient(
-          transform: GradientRotation(0.5), // 🔥 diagonal angle
-          colors: [
-            Color(0xFF2E3192),
-            Color.fromARGB(255, 24, 224, 255),
-          ],
+          transform: GradientRotation(0.5),
+          colors: [Color(0xFF2E3192), Color.fromARGB(255, 24, 224, 255)],
           stops: [0.0, 1.0],
         );
       }
@@ -165,14 +149,15 @@ class BackgroundContainer extends StatelessWidget {
       color: resolvedColor,
       borderRadius: resolvedRadius,
       border: border,
-      boxShadow: boxShadow ??
+      boxShadow:
+          boxShadow ??
           (showDefaultShadow
               ? [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.18),
+                    color: Colors.black.withValues(alpha: 0.18),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
-                  )
+                  ),
                 ]
               : null),
     );
@@ -204,10 +189,7 @@ class BackgroundContainer extends StatelessWidget {
 
           // Content
           if (child != null)
-            Padding(
-              padding: padding ?? const EdgeInsets.all(24),
-              child: child,
-            ),
+            Padding(padding: padding ?? const EdgeInsets.all(24), child: child),
         ],
       ),
     );
@@ -247,10 +229,7 @@ class BackgroundContainerExamples extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           _label('1. Default (blue gradient, no image)'),
-          BackgroundContainer(
-            height: 140,
-            child: _content(),
-          ),
+          BackgroundContainer(height: 140, child: _content()),
           _label('2. Network image'),
           BackgroundContainer(
             height: 160,
@@ -299,7 +278,7 @@ class BackgroundContainerExamples extends StatelessWidget {
             overlayGradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+              colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
             ),
             child: _content(),
           ),
@@ -329,25 +308,24 @@ class BackgroundContainerExamples extends StatelessWidget {
             child: _content(),
           ),
           _label('12. Semi-transparent (opacity)'),
-          BackgroundContainer(
-            height: 140,
-            opacity: 0.6,
-            child: _content(),
-          ),
+          BackgroundContainer(height: 140, opacity: 0.6, child: _content()),
           _label('13. Image with color filter (tint)'),
           BackgroundContainer(
             height: 160,
             imageNetwork:
                 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
-            imageColorFilter:
-                const ColorFilter.mode(Colors.blue, BlendMode.color),
+            imageColorFilter: const ColorFilter.mode(
+              Colors.blue,
+              BlendMode.color,
+            ),
             child: _content(),
           ),
           _label('14. With onTap callback'),
           BackgroundContainer(
             height: 140,
-            onTap: () => ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(content: Text('Tapped!'))),
+            onTap: () => ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Tapped!'))),
             child: _content(subtitle: 'Tap me!'),
           ),
           _label('15. Fixed width + minHeight'),
@@ -366,36 +344,43 @@ class BackgroundContainerExamples extends StatelessWidget {
   }
 
   Widget _label(String text) => Padding(
-        padding: const EdgeInsets.only(top: 20, bottom: 8),
-        child: Text(text,
-            style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.black54)),
-      );
+    padding: const EdgeInsets.only(top: 20, bottom: 8),
+    child: Text(
+      text,
+      style: const TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: Colors.black54,
+      ),
+    ),
+  );
 
-  Widget _content(
-          {String subtitle =
-              'Choose from expert-designed fitness,\nyoga, and nutrition plans.'}) =>
-      Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            'Transform With Structured Programs',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-                height: 1.3),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-                fontSize: 13, color: Colors.white70, height: 1.5),
-          ),
-        ],
-      );
+  Widget _content({
+    String subtitle =
+        'Choose from expert-designed fitness,\nyoga, and nutrition plans.',
+  }) => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      const Text(
+        'Transform With Structured Programs',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+          height: 1.3,
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text(
+        subtitle,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 13,
+          color: Colors.white70,
+          height: 1.5,
+        ),
+      ),
+    ],
+  );
 }

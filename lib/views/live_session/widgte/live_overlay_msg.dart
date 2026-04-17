@@ -15,11 +15,13 @@ class LiveMessagesOverlay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final messages = ref.watch(liveVideoProvider(config)).messages;
+    final messages = ref.watch(liveVideoMessagesProvider(config));
 
     final visibleMessages = messages.length > maxVisibleMessages
         ? messages.sublist(messages.length - maxVisibleMessages)
         : messages;
+
+    if (visibleMessages.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,7 +31,7 @@ class LiveMessagesOverlay extends ConsumerWidget {
           margin: const EdgeInsets.symmetric(vertical: 4),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(

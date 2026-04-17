@@ -25,7 +25,7 @@ class MockFitnessPlanRepository implements FitnessPlanRepository {
     "title": "90 Days Total Transformation",
     "subtitle": "Trainer + diet",
     "weeks": 13,
-    "features": ["Video Sessions", "Diet Chart", "Weekly Check-in"],
+    "features": ["Video Sessions", "Diet Chart", "Weekly Check-in","Video Sessions", "Diet Chart", "Weekly Check-in"],
     "price": 4999,
     "badge": "Most Popular",
     "is_featured": true,
@@ -36,7 +36,7 @@ class MockFitnessPlanRepository implements FitnessPlanRepository {
     "title": "60 Days Diet Plan",
     "subtitle": "Nutrition plan",
     "weeks": 8,
-    "features": ["Video Sessions", "Diet Chart"],
+    "features": ["Video Sessionshnfsgdagshdfmjrdgesfwasrgthdnfjhm", "Diet Chart","Video Sessions", "Diet Chart", "Weekly Check-in"],
     "price": 2499,
     "badge": "New",
     "is_featured": false,
@@ -156,7 +156,6 @@ class MockFitnessPlanRepository implements FitnessPlanRepository {
   Future<FitnessPlanDetail> getPlanById(String id) async {
     await Future.delayed(const Duration(milliseconds: 800));
 
-    /// 🔥 YOU CAN USE ID TO RETURN DIFFERENT DATA
     if (id == "1") {
       return FitnessPlanDetail(
         id: 1,

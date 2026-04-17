@@ -14,6 +14,9 @@ class FitiqAuthFooter extends StatelessWidget {
   final TextStyle? promptTextStyle;
   final TextStyle? registerTextStyle;
   final TextStyle? forgotPasswordTextStyle;
+  final double? spacing;
+  final double? verticalSpacing;
+
   const FitiqAuthFooter({
     super.key,
     this.onRegister,
@@ -26,10 +29,14 @@ class FitiqAuthFooter extends StatelessWidget {
     this.promptTextStyle,
     this.registerTextStyle,
     this.forgotPasswordTextStyle,
+    this.spacing,
+    this.verticalSpacing,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bool tablet = MediaQuery.of(context).size.width >= 600;
+
     return Column(
       children: [
         Wrap(
@@ -38,17 +45,22 @@ class FitiqAuthFooter extends StatelessWidget {
           children: [
             Text(
               promptText,
-              style: promptTextStyle ??
-                  AppTextStyles.caption.copyWith(fontFamily: "Lato"),
+              style:
+                  promptTextStyle ??
+                  AppTextStyles.caption.copyWith(
+                    fontFamily: "Lato",
+                    fontSize: tablet ? 9.sp : 14.sp,
+                  ),
             ),
-            SizedBox(width: 4.w),
+            SizedBox(width: spacing ?? (tablet ? 6.w : 4.w)),
             GestureDetector(
               onTap: onRegister,
               child: Text(
                 registerText,
-                style: registerTextStyle ??
+                style:
+                    registerTextStyle ??
                     AppTextStyles.link.copyWith(
-                      fontSize: 14.sp,
+                      fontSize: tablet ? 12.sp : 14.sp,
                       fontFamily: "Lato",
                       color: registerTextColor ?? AppColors.primary,
                     ),
@@ -57,13 +69,15 @@ class FitiqAuthFooter extends StatelessWidget {
           ],
         ),
         if (forgotPasswordText.isNotEmpty) ...[
-          SizedBox(height: 10.h),
+          SizedBox(height: verticalSpacing ?? (tablet ? 10.h : 10.h)),
           GestureDetector(
             onTap: onForgotPassword,
             child: Text(
               forgotPasswordText,
-              style: forgotPasswordTextStyle ??
+              style:
+                  forgotPasswordTextStyle ??
                   AppTextStyles.link.copyWith(
+                    fontSize: tablet ? 10.sp : 14.sp,
                     fontFamily: "Lato",
                     color: forgotPasswordTextColor ?? AppColors.primary,
                   ),

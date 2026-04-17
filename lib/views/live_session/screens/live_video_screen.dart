@@ -95,7 +95,8 @@ class _LiveVideoScreenState extends ConsumerState<LiveVideoScreen>
       widget.onViewAllChat!();
       return;
     }
-    final messages = ref.read(liveVideoProvider(widget.config)).messages;
+    final messages = ref.read(liveVideoMessagesProvider(widget.config));
+    ;
     FullChatScreen.show(context, config: widget.config, messages: messages);
   }
 

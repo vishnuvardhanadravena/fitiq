@@ -4,13 +4,12 @@ import 'package:fitiq/views/live_session/widgte/live_video_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Fully dynamic bottom action bar for live video.
 class VideoActionBar extends ConsumerWidget {
   final LiveVideoConfig config;
   final VoidCallback? onMore;
   final VoidCallback? onLeave;
-  final double? height; // dynamic bar height
-  final double? fontScale; // dynamic icon/font scaling
+  final double? height;
+  final double? fontScale;
 
   const VideoActionBar({
     super.key,
@@ -32,7 +31,9 @@ class VideoActionBar extends ConsumerWidget {
     final isMuted = ref.watch(liveVideoIsMutedProvider(config));
     final isCameraOff = ref.watch(liveVideoIsCameraOffProvider(config));
     final isChatOpen = ref.watch(liveVideoChatOpenProvider(config));
-    final notifier = ref.read(liveVideoProvider(config).notifier);
+
+    // ✅ Use controls notifier instead of the old monolithic one
+    final controls = ref.read(liveVideoControlsProvider(config).notifier);
 
     final double iconContainerSize = barHeight * 0.8;
     final double iconSize = iconContainerSize * 0.5 * scale;
@@ -50,7 +51,7 @@ class VideoActionBar extends ConsumerWidget {
           _ActionIconButton(
             icon: isMuted ? Icons.mic_off_rounded : Icons.mic_off_outlined,
             isActive: isMuted,
-            onTap: notifier.toggleMute,
+            onTap: controls.toggleMute,
             containerSize: iconContainerSize,
             iconSize: iconSize,
           ),
@@ -59,7 +60,7 @@ class VideoActionBar extends ConsumerWidget {
                 ? Icons.videocam_off_rounded
                 : Icons.videocam_outlined,
             isActive: isCameraOff,
-            onTap: notifier.toggleCamera,
+            onTap: controls.toggleCamera,
             containerSize: iconContainerSize,
             iconSize: iconSize,
           ),
@@ -73,7 +74,7 @@ class VideoActionBar extends ConsumerWidget {
             icon: Icons.chat_bubble_outline_rounded,
             isActive: isChatOpen,
             activeColor: LiveVideoTheme.accentBlue,
-            onTap: notifier.toggleChat,
+            onTap: controls.toggleChat,
             containerSize: iconContainerSize,
             iconSize: iconSize,
           ),
@@ -88,7 +89,6 @@ class VideoActionBar extends ConsumerWidget {
   }
 }
 
-/// ─── Private dynamic icon button ─────────────────────
 class _ActionIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
@@ -114,11 +114,11 @@ class _ActionIconButton extends StatelessWidget {
         width: containerSize,
         height: containerSize,
         decoration: BoxDecoration(
-          color: isActive ? activeColor.withOpacity(0.12) : Colors.white,
+          color: isActive ? activeColor.withValues(alpha: 0.12) : Colors.white,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: containerSize * 0.12,
               offset: Offset(0, containerSize * 0.04),
             ),
@@ -134,7 +134,6 @@ class _ActionIconButton extends StatelessWidget {
   }
 }
 
-/// ─── Leave (red) button ──────────────────────
 class _LeaveButton extends StatelessWidget {
   final VoidCallback? onTap;
   final double containerSize;

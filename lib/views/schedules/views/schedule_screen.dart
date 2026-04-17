@@ -2,7 +2,7 @@ import 'package:fitiq/core/theame/app_colors.dart';
 import 'package:fitiq/core/theame/app_text_styles.dart';
 import 'package:fitiq/views/live_session/provider/live_video_config.dart';
 import 'package:fitiq/views/live_session/screens/live_video_screen.dart';
-import 'package:fitiq/views/live_session/widgte/video_player_widget.dart';
+import 'package:fitiq/views/schedules/shimmer/schedule_shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,7 +26,7 @@ class ScheduleScreen extends ConsumerWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: scheduleAsync.when(
-            loading: () => const _LoadingBody(),
+            loading: () => const LoadingBody(),
             error: (err, _) => _ErrorBody(
               onRetry: () => ref.read(scheduleProvider.notifier).refresh(),
             ),
@@ -194,19 +194,7 @@ class _ScheduleBody extends ConsumerWidget {
                     thumbnailUrl:
                         'https://images.unsplash.com/photo-1554284126-0a35f9d6c245?auto=format&fit=crop&w=400&q=80',
                   ),
-                  // playerWidget: NetworkVideoPlayer(
-                  //   config: LiveVideoConfig(
-                  //     title: 'Morning Fat Burn Yoga',
-                  //     hostName: 'Ananya Sharma',
-                  //     viewerCount: 124,
-                  //     isLive: false,
-                  //     videoUrl:
-                  //         'https://www.pexels.com/download/video/7710535/',
-                  //     thumbnailUrl:
-                  //         'https://images.unsplash.com/photo-1554284126-0a35f9d6c245?auto=format&fit=crop&w=400&q=80',
-                  //   ),
-                  //   videoUrl: 'https://www.pexels.com/download/video/7710535/',
-                  // ),
+                
                 ),
               ),
             ),
@@ -231,30 +219,7 @@ class _ScheduleBody extends ConsumerWidget {
   }
 }
 
-class _LoadingBody extends StatelessWidget {
-  const _LoadingBody();
 
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _WeekStripSkeleton(),
-          CircularProgressIndicator(
-            color: ScheduleColors.primary,
-            strokeWidth: 2.5,
-          ),
-          SizedBox(height: 14),
-          Text(
-            'Loading your schedule...',
-            style: TextStyle(fontSize: 13, color: ScheduleColors.textSecondary),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _ErrorBody extends StatelessWidget {
   final VoidCallback onRetry;

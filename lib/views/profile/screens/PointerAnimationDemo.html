@@ -1,0 +1,229 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Real Fish Chase Pointer</title>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: radial-gradient(circle, #0a1a2f, #000);
+    }
+
+    .fish {
+      position: fixed;
+      width: 60px;
+      height: 40px;
+      pointer-events: none;
+      transform-origin: center;
+      will-change: transform;
+    }
+
+    .fish svg {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+<script>
+  const fishes = [];
+  const totalFish = 20;
+
+  let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+  // Track pointer
+  window.addEventListener("mousemove", (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
+
+  // Create REAL fish (SVG + animated tail)
+  for (let i = 0; i < totalFish; i++) {
+    const el = document.createElement("div");
+    el.className = "fish";
+
+   el.innerHTML = `
+  <svg viewBox="0 0 120 60">
+    <defs>
+      <linearGradient id="g${i}" x1="0" x2="1">
+        <stop offset="0%" stop-color="#ff9f43"/>
+        <stop offset="100%" stop-color="#ff6b00"/>
+      </linearGradient>
+    </defs>
+
+    Body (more natural fish shape)
+    <path d="M30,30 
+             C50,5 90,5 100,30 
+             C90,55 50,55 30,30 Z" 
+          fill="url(#g${i})" />
+
+    Tail (more realistic triangle + curve feel)
+    <polygon points="30,30 5,10 5,50" fill="#ff6b00">
+      <animate 
+        attributeName="points"
+        dur="0.35s"
+        repeatCount="indefinite"
+        values="
+          30,30 5,10 5,50;
+          30,30 12,18 12,42;
+          30,30 5,10 5,50
+        " />
+    </polygon>
+
+    Top fin
+    <path d="M60,15 L70,5 L80,18 Z" fill="rgba(255,255,255,0.3)" />
+
+    Bottom fin
+    <path d="M60,45 L70,55 L80,42 Z" fill="rgba(255,255,255,0.3)" />
+
+    Eye
+    <circle cx="85" cy="25" r="3.5" fill="white"/>
+    <circle cx="87" cy="25" r="1.8" fill="black"/>
+  </svg>
+`;
+
+    document.body.appendChild(el);
+
+    fishes.push({
+      el,
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      speed: 0.02 + Math.random() * 0.04,
+      offsetX: (Math.random() - 0.5) * 250,
+      offsetY: (Math.random() - 0.5) * 250,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+
+  function animate() {
+    fishes.forEach((fish, i) => {
+      // Unique target (spread fish)
+      const targetX = mouse.x + fish.offsetX;
+      const targetY = mouse.y + fish.offsetY;
+
+      // Smooth movement (LERP)
+      fish.x += (targetX - fish.x) * fish.speed;
+      fish.y += (targetY - fish.y) * fish.speed;
+
+      // Direction angle
+      const angle = Math.atan2(targetY - fish.y, targetX - fish.x);
+
+      // Subtle floating/wave effect
+      fish.phase += 0.05;
+      const wave = Math.sin(fish.phase) * 5;
+
+      fish.el.style.transform =
+        `translate(${fish.x}px, ${fish.y + wave}px) rotate(${angle}rad)`;
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+</script>
+
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fish Chase Pointer</title>
+  <style>
+    * { margin: 0; padding: 0; }
+    body { overflow: hidden; background: radial-gradient(circle, #0a1a2f, #000); width: 100vw; height: 100vh; }
+    .fish { position: fixed; pointer-events: none; transform-origin: center; will-change: transform; }
+  </style>
+</head>
+<body>
+<script>
+  const fishes = [];
+  const totalFish = 20;
+  let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+  window.addEventListener("mousemove", e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+  const palette = [
+    { c1: "#ff9f43", c2: "#ff6b00", tail: "#ff6b00" },
+    { c1: "#48dbfb", c2: "#0abde3", tail: "#0abde3" },
+    { c1: "#ff6b81", c2: "#c0392b", tail: "#c0392b" },
+    { c1: "#a29bfe", c2: "#6c5ce7", tail: "#6c5ce7" },
+    { c1: "#55efc4", c2: "#00b894", tail: "#00b894" },
+    { c1: "#ffeaa7", c2: "#fdcb6e", tail: "#fdcb6e" },
+  ];
+
+  for (let i = 0; i < totalFish; i++) {
+    const color = palette[i % palette.length];
+    const scale = 0.6 + Math.random() * 0.9;
+    const w = Math.round(120 * scale);
+    const h = Math.round(60 * scale);
+    const tailDur = (0.28 + Math.random() * 0.2).toFixed(2) + "s";
+
+    const el = document.createElement("div");
+    el.className = "fish";
+    el.style.width = w + "px";
+    el.style.height = h + "px";
+
+    el.innerHTML = `
+    <svg viewBox="0 0 120 60" width="${w}" height="${h}">
+      <defs>
+        <linearGradient id="g${i}" x1="0" x2="1">
+          <stop offset="0%" stop-color="${color.c1}"/>
+          <stop offset="100%" stop-color="${color.c2}"/>
+        </linearGradient>
+      </defs>
+
+      <path d="M30,30 C50,5 90,5 100,30 C90,55 50,55 30,30 Z"
+            fill="url(#g${i})" />
+
+      <polygon points="30,30 5,10 5,50" fill="${color.tail}">
+        <animate attributeName="points" dur="${tailDur}" repeatCount="indefinite"
+          values="30,30 5,10 5,50; 30,30 12,18 12,42; 30,30 5,10 5,50"/>
+      </polygon>
+
+      <path d="M60,15 L70,5 L80,18 Z" fill="rgba(255,255,255,0.3)" />
+      <path d="M60,45 L70,55 L80,42 Z" fill="rgba(255,255,255,0.3)" />
+
+      <circle cx="85" cy="25" r="3.5" fill="white"/>
+      <circle cx="87" cy="25" r="1.8" fill="black"/>
+    </svg>`;
+
+    document.body.appendChild(el);
+
+    fishes.push({
+      el,
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      speed: 0.02 + Math.random() * 0.04,
+      offsetX: (Math.random() - 0.5) * 250,
+      offsetY: (Math.random() - 0.5) * 250,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+
+  function animate() {
+    fishes.forEach(fish => {
+      const targetX = mouse.x + fish.offsetX;
+      const targetY = mouse.y + fish.offsetY;
+
+      fish.x += (targetX - fish.x) * fish.speed;
+      fish.y += (targetY - fish.y) * fish.speed;
+
+      const angle = Math.atan2(targetY - fish.y, targetX - fish.x);
+      fish.phase += 0.05;
+      const wave = Math.sin(fish.phase) * 5;
+
+      fish.el.style.transform =
+        `translate(${fish.x}px, ${fish.y + wave}px) rotate(${angle}rad)`;
+    });
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+</script>
+</body>
+</html>

@@ -96,7 +96,7 @@ class _ChatPanelState extends ConsumerState<ChatPanel> {
           // ),
           ChatInputBar(
             onSend: (text) => ref
-                .read(liveVideoProvider(widget.config).notifier)
+                .read(liveVideoMessagesProvider(widget.config).notifier)
                 .sendMessage(text),
           ),
           SizedBox(height: MediaQuery.of(context).padding.bottom),
@@ -131,5 +131,4 @@ class _ChatPanelState extends ConsumerState<ChatPanel> {
   //     ),
   //   );
   // }
-
 }

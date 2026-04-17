@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'programs_res.freezed.dart';
@@ -33,7 +34,9 @@ abstract class FitnessPlan with _$FitnessPlan {
 }
 
 bool boolFromJson(dynamic value) {
-  print('RAW is_featured value: $value (${value.runtimeType})');
+  if (kDebugMode) {
+    print('RAW is_featured value: $value (${value.runtimeType})');
+  }
 
   if (value is bool) return value;
   if (value is int) return value == 1;

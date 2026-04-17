@@ -31,15 +31,13 @@ class FitiqPageHeader extends StatelessWidget {
               child: Image.asset(
                 backgroundImagePath!,
                 fit: BoxFit.cover,
-                // color: Colors.black.withOpacity(0.2),
+                // color: Colors.black.withValues(alpha:0.2),
                 colorBlendMode: BlendMode.darken,
               ),
             )
           else
             Positioned.fill(
-              child: Container(
-                color: backgroundColor ?? AppColors.background,
-              ),
+              child: Container(color: backgroundColor ?? AppColors.background),
             ),
           // Content
           Align(
@@ -50,14 +48,18 @@ class FitiqPageHeader extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (logo != null) ...[logo!, const SizedBox(height: 12)],
-                  Text(title,
-                      style: AppTextStyles.headingLarge,
-                      textAlign: TextAlign.center),
+                  Text(
+                    title,
+                    style: AppTextStyles.headingLarge,
+                    textAlign: TextAlign.center,
+                  ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 6),
-                    Text(subtitle!,
-                        style: AppTextStyles.subheading,
-                        textAlign: TextAlign.center),
+                    Text(
+                      subtitle!,
+                      style: AppTextStyles.subheading,
+                      textAlign: TextAlign.center,
+                    ),
                   ],
                 ],
               ),

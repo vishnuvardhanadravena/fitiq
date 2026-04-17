@@ -116,7 +116,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
               decoration: BoxDecoration(
                 color: _hasText
                     ? widget.sendButtonColor
-                    : widget.sendButtonColor.withOpacity(0.5),
+                    : widget.sendButtonColor.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(borderRadius),
               ),
               child: Text(
