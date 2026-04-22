@@ -16,7 +16,6 @@ class EnrollmentSuccessScreen extends StatelessWidget {
 
           final isTab = w > 600;
 
-          /// 🔥 dynamic scaling
           final padding = isTab ? 40.0 : 16.0;
           final iconSize = isTab ? 80.0 : 60.0;
           final titleSize = isTab ? 28.0 : 22.0;

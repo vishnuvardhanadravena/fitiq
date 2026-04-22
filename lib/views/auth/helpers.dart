@@ -35,3 +35,13 @@ String? validatePhone(String v) {
 
   return null;
 }
+String? validateRequired(String v, String field) {
+  if (v.trim().isEmpty) return 'Enter your $field';
+  return null;
+}
+
+String? validateNumber(String v, String field) {
+  if (v.trim().isEmpty) return 'Enter your $field';
+  if (double.tryParse(v) == null) return 'Enter valid $field';
+  return null;
+}

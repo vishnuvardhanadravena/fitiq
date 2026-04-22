@@ -422,10 +422,11 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
             ),
           ),
 
-          // ── Plans grid ───────────────────────────────────────────────────
           SliverPadding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10),
-            sliver: const SliverToBoxAdapter(child: FitnessPlansScreen()),
+            sliver: const SliverToBoxAdapter(
+              child: SafeArea(child: FitnessPlansScreen()),
+            ),
           ),
         ],
       ),

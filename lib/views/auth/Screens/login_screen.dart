@@ -1,5 +1,7 @@
 import 'package:fitiq/core/constants/app_assets.dart';
+import 'package:fitiq/core/providers/shared_prefs_provider.dart';
 import 'package:fitiq/core/theame/app_colors.dart';
+import 'package:fitiq/core/theame/app_logger.dart';
 import 'package:fitiq/core/theame/app_radius.dart';
 import 'package:fitiq/core/theame/app_text_styles.dart';
 import 'package:fitiq/core/theame/app_toast.dart';
@@ -12,6 +14,7 @@ import 'package:fitiq/views/auth/widgets/auth_footer.dart';
 import 'package:fitiq/views/auth/widgets/header_widget.dart';
 import 'package:fitiq/views/auth/widgets/soicial_meida_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -122,18 +125,22 @@ class FitiqSecondaryButton extends StatelessWidget {
   }
 }
 
-class FitiqSignInScreen extends StatefulWidget {
+class FitiqSignInScreen extends ConsumerStatefulWidget {
   const FitiqSignInScreen({super.key});
 
   @override
-  State<FitiqSignInScreen> createState() => _FitiqSignInScreenState();
+  ConsumerState<FitiqSignInScreen> createState() => _FitiqSignInScreenState();
 }
 
-class _FitiqSignInScreenState extends State<FitiqSignInScreen> {
+class _FitiqSignInScreenState extends ConsumerState<FitiqSignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   bool _loading = false;
+  bool _submitted = false;
+
+  bool _emailTouched = false;
+  bool _passwordTouched = false;
   String? _errorMessage;
 
   @override
@@ -144,27 +151,52 @@ class _FitiqSignInScreenState extends State<FitiqSignInScreen> {
   }
 
   Future<void> _handleSignIn() async {
-    // Trigger Flutter's form validation (shows custom errors via setState)
-    _formKey.currentState?.validate();
-
-    // Manually check field values since validator always returns null
-    final emailError = validateEmail(_emailCtrl.text);
-    final passwordError = validatePassword(_passCtrl.text);
-
-    if (emailError != null || passwordError != null) return; // ❌ Stop here
-
-    setState(() {
-      _loading = true;
-      _errorMessage = null;
-    });
-
     try {
-      // your auth logic...
-      if (mounted) context.go('/home');
-    } catch (e) {
-      setState(() => _errorMessage = e.toString());
+      AppLogger.log("👉 Submit Clicked");
+
+      setState(() {
+        _submitted = true;
+        _emailTouched = false;
+        _passwordTouched = false;
+      });
+
+      final emailError = validateEmail(_emailCtrl.text);
+      final passError = validatePassword(_passCtrl.text);
+
+      AppLogger.log("📧 Email Error: $emailError");
+      AppLogger.log("🔑 Password Error: $passError");
+
+      if (emailError != null || passError != null) {
+        AppLogger.log("❌ Validation Failed");
+        return;
+      }
+
+      setState(() => _loading = true);
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      AppLogger.log("✅ Login Success");
+
+      final prefs = ref.read(sharedPrefsProvider);
+      final storage = ref.read(secureStorageProvider);
+
+      await prefs.setBool('isLoggedIn', true);
+      await storage.writeString('token', '123');
+
+      if (!mounted) return;
+
+      context.go(RouteList.home);
+    } catch (e, stack) {
+      AppLogger.log("🔥 ERROR: $e");
+      AppLogger.log("📍 STACK: $stack");
+
+      setState(() {
+        _errorMessage = e.toString();
+      });
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -197,23 +229,37 @@ class _FitiqSignInScreenState extends State<FitiqSignInScreen> {
                       label: 'Email Address',
                       hint: 'you@example.com',
                       prefixIcon: Icons.email_outlined,
-                      // prefixImage: AppAssets.loginEmailicon,
                       controller: _emailCtrl,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
-                      validator: (v) => validateEmail(v ?? ''),
+                      forceErrorText: (_submitted && !_emailTouched)
+                          ? validateEmail(_emailCtrl.text)
+                          : null,
+
+                      onChanged: (_) {
+                        setState(() {
+                          _emailTouched = true;
+                        });
+                      },
                     ),
                     SizedBox(height: 0.02.sh),
                     FitiqTextField(
                       label: 'Password',
                       hint: '••••••••••••',
                       prefixIcon: Icons.lock_outline,
-                      // prefixImage: AppAssets.loginPasswordicon,
                       isPassword: true,
                       controller: _passCtrl,
                       textInputAction: TextInputAction.done,
+                      forceErrorText: (_submitted && !_passwordTouched)
+                          ? validatePassword(_passCtrl.text)
+                          : null,
+                      onChanged: (_) {
+                        setState(() {
+                          _passwordTouched = true;
+                        });
+                      },
+
                       onSubmitted: (_) => _handleSignIn(),
-                      validator: (v) => validatePassword(v ?? ''),
                     ),
                     if (_errorMessage != null) ...[
                       SizedBox(height: 10.h),
@@ -231,7 +277,8 @@ class _FitiqSignInScreenState extends State<FitiqSignInScreen> {
                     // ),
                     FitiqPrimaryButton(
                       label: 'Submit',
-                      onPressed: () {},
+                      onPressed: _loading ? null : _handleSignIn,
+                      isLoading: _loading,
                       width: double.infinity,
                       height: isTablet ? 70.h : 54.h,
                       fontSize: isTablet ? 9.sp : 16.sp,
@@ -240,7 +287,6 @@ class _FitiqSignInScreenState extends State<FitiqSignInScreen> {
                       padding: isTablet
                           ? EdgeInsets.symmetric(horizontal: 24, vertical: 16)
                           : EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      // leadingIcon: Icons.arrow_forward,
                       trailingIcon: Icons.arrow_forward,
                     ),
                     SizedBox(height: 24.h),

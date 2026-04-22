@@ -19,7 +19,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final EdgeInsetsGeometry? padding;
   final TextAlign textAlign;
 
-  // 🔥 Back Button Controls
   final Color backButtonBgColor;
   final Color backButtonIconColor;
   final Color? backButtonBorderColor;
@@ -28,7 +27,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double? backIconSize;
   final BorderRadius? backButtonRadius;
 
-  // 🔥 Advanced Controls
   final EdgeInsets? backButtonPadding;
   final Alignment backButtonAlignment;
   final bool enableBackRipple;
@@ -47,9 +45,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.height = kToolbarHeight,
     this.padding,
     this.textAlign = TextAlign.start,
-    
-
-    // Defaults
     this.backButtonBgColor = Colors.white,
     this.backButtonIconColor = const Color(0xFF1A1A2E),
     this.backButtonBorderColor,
@@ -57,20 +52,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.backButtonSize,
     this.backIconSize,
     this.backButtonRadius,
-
     this.backButtonPadding,
     this.backButtonAlignment = Alignment.centerLeft,
     this.enableBackRipple = true,
   });
-
   @override
   Size get preferredSize => Size.fromHeight(height);
-
   @override
   Widget build(BuildContext context) {
     final defaultPadding =
         padding ?? EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h);
-
     return Material(
       color: Colors.transparent,
       elevation: elevation,
@@ -85,7 +76,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             padding: defaultPadding,
             child: Row(
               children: [
-                /// 🔙 Back Button
                 if (showBackButton)
                   Align(
                     alignment: backButtonAlignment,
@@ -95,34 +85,41 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ? Material(
                               color: Colors.transparent,
                               child: InkWell(
-                                borderRadius: backButtonRadius ??
+                                borderRadius:
+                                    backButtonRadius ??
                                     BorderRadius.circular(10.r),
-                                onTap: onBackTap ??
+                                onTap:
+                                    onBackTap ??
                                     () => Navigator.maybePop(context),
                                 child: _buildBackButton(),
                               ),
                             )
                           : GestureDetector(
-                              onTap: onBackTap ??
+                              onTap:
+                                  onBackTap ??
                                   () => Navigator.maybePop(context),
                               child: _buildBackButton(),
                             ),
                     ),
                   )
                 else
-                  SizedBox(width: backButtonSize ?? 30.w),
-
+                  Opacity(
+                    opacity: 0,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.08,
+                    ),
+                  ),
                 SizedBox(width: 10.w),
-
-                /// 🧾 Title
                 Expanded(
-                  child: titleWidget ??
+                  child:
+                      titleWidget ??
                       Text(
                         title ?? '',
                         textAlign: textAlign,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: titleStyle ??
+                        style:
+                            titleStyle ??
                             TextStyle(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.w700,
@@ -130,8 +127,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             ),
                       ),
                 ),
-
-                /// ⚡ Actions
                 if (actions != null && actions!.isNotEmpty)
                   Row(mainAxisSize: MainAxisSize.min, children: actions!)
                 else
@@ -144,15 +139,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  /// 🔧 Back Button UI
   Widget _buildBackButton() {
     return Container(
       width: backButtonSize ?? 30.w,
       height: backButtonSize ?? 30.w,
       decoration: BoxDecoration(
         color: backButtonBgColor,
-        borderRadius:
-            backButtonRadius ?? BorderRadius.circular(10.r),
+        borderRadius: backButtonRadius ?? BorderRadius.circular(10.r),
         border: backButtonBorderColor != null
             ? Border.all(color: backButtonBorderColor!)
             : Border.all(color: Colors.grey.shade200),

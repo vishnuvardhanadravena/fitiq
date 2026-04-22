@@ -9,12 +9,19 @@ class StepController extends StateNotifier<int> {
 
   final int totalSteps = 5;
 
+
+  void reset() => state = 1;
+
   void next() {
-    if (state < totalSteps) state++;
+    if (state < totalSteps) {
+      state++;
+    }
   }
 
   void previous() {
-    if (state > 1) state--;
+    if (state > 1) {
+      state--;
+    }
   }
 
   void goTo(int step) {

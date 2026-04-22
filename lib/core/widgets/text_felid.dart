@@ -38,6 +38,7 @@ class FitiqTextField extends StatefulWidget {
 
   /// Focus
   final FocusNode? focusNode;
+  final String? forceErrorText;
 
   /// Callbacks
   final String? Function(String?)? validator;
@@ -69,6 +70,7 @@ class FitiqTextField extends StatefulWidget {
     this.validator,
     this.onChanged,
     this.onSubmitted,
+    this.forceErrorText,
   });
 
   @override
@@ -101,7 +103,6 @@ class _FitiqTextFieldState extends State<FitiqTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /// 🔤 LABEL
         Text(
           widget.label,
           style: AppTextStyles.label.copyWith(
@@ -109,27 +110,22 @@ class _FitiqTextFieldState extends State<FitiqTextField> {
             fontWeight: FontWeight.w700,
           ),
         ),
-
         const SizedBox(height: 8),
-
-        /// 🔲 FIELD
         AnimatedContainer(
           duration: const Duration(milliseconds: 0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.radiusInput + 6),
-            border: _isFocused
-                ? Border.all(
-                    color: AppColors.inputBorder.withValues(alpha: 0.4),
-                    width: 0.007.sh,
-                  )
-                : null,
+            // border: _isFocused
+            //     ? Border.all(
+            //         color: AppColors.inputBorder.withValues(alpha: 0.4),
+            //         width: 0.007.sh,
+            //       )
+            //     : null,
           ),
           child: TextFormField(
             controller: widget.controller,
-            initialValue: widget.initialValue,
             focusNode: _focusNode,
 
-            /// 🔥 NEW FEATURES
             readOnly: widget.readOnly,
             onTap: widget.onTap,
 
@@ -137,7 +133,6 @@ class _FitiqTextFieldState extends State<FitiqTextField> {
             keyboardType: widget.keyboardType,
             enabled: widget.enabled,
 
-            /// 🔥 EXPANDABLE SUPPORT
             maxLines: widget.isExpandable
                 ? null
                 : (widget.isPassword ? 1 : widget.maxLines),
@@ -149,25 +144,36 @@ class _FitiqTextFieldState extends State<FitiqTextField> {
             textInputAction: widget.textInputAction,
             autofocus: widget.autofocus,
 
-            validator: (value) {
-              final error = widget.validator?.call(value);
-              setState(() => _errorText = error);
-              return null;
-            },
+            // validator: (value) {
+            //   final error = widget.validator?.call(value);
+            //   setState(() => _errorText = error);
+            //   return error;
+            // },
 
-            onChanged: (value) {
-              final error = widget.validator?.call(value);
-              setState(() => _errorText = error);
-              widget.onChanged?.call(value);
-            },
+            // onChanged: (value) {
+            //   final error = widget.validator?.call(value);
+            //   setState(() => _errorText = error);
+            //   widget.onChanged?.call(value);
+            // },
+            onChanged: widget.onChanged,
 
             onFieldSubmitted: widget.onSubmitted,
 
-            style: AppTextStyles.body.copyWith(color: AppColors.textPrimary),
+            style: TextStyle(
+              fontSize: safeSp(14),
+              color: AppColors.textPrimary,
+            ),
 
+            strutStyle: StrutStyle(
+              fontSize: safeSp(14),
+              forceStrutHeight: true,
+            ),
+            forceErrorText: widget.forceErrorText,
             decoration: InputDecoration(
               hintText: widget.hint,
-              hintStyle: AppTextStyles.body.copyWith(
+
+              hintStyle: TextStyle(
+                fontSize: safeSp(14),
                 color: AppColors.textSecondary,
               ),
 
@@ -175,109 +181,81 @@ class _FitiqTextFieldState extends State<FitiqTextField> {
               fillColor: _isFocused ? Colors.white : AppColors.inputFill,
 
               contentPadding: EdgeInsets.symmetric(
-                horizontal: 10.sp,
-                vertical: 10.sp,
+                horizontal: safeSp(10),
+                vertical: safeSp(10),
               ),
 
-              /// 🔥 PREFIX
-              prefixIcon: widget.prefixImage != null
-                  ? Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: ColorFiltered(
-                        colorFilter: ColorFilter.mode(
-                          _isFocused
-                              ? AppColors.inputBorder
-                              : AppColors.iconTint,
-                          BlendMode.srcIn,
-                        ),
-                        child: Image.asset(
-                          widget.prefixImage!,
-                          width: 20.w,
-                          height: 20.h,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    )
-                  : widget.prefixIcon != null
+              prefixIcon: widget.prefixIcon != null
                   ? Icon(
                       widget.prefixIcon,
-                      color: _isFocused
-                          ? AppColors.inputBorder
-                          : AppColors.iconTint,
-                      size: 20.h,
+                      size: safeSp(18),
+                      color: AppColors.iconTint,
                     )
                   : null,
 
-              /// 🔥 SUFFIX (UPDATED)
               suffixIcon: widget.isPassword
                   ? IconButton(
                       icon: Icon(
                         _obscure
                             ? Icons.visibility_off_outlined
                             : Icons.visibility_outlined,
-                        color: AppColors.iconTint,
-                        size: 20.h,
+                        size: safeSp(18),
                       ),
                       onPressed: () => setState(() => _obscure = !_obscure),
                     )
                   : widget.suffixWidget,
 
-              /// 🔥 COUNTER CONTROL
-              counterText: widget.showCounter ? null : "",
-
-              /// BORDERS
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.radiusInput),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadius.radiusInput),
-                borderSide: BorderSide(color: AppColors.inputFill, width: 2.w),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.radiusInput),
                 borderSide: BorderSide(
-                  color: AppColors.inputBorder,
-                  width: 1.w,
+                  color: AppColors.inputBorder.withValues(alpha: 0.4),
+                  width: 0.007.sh,
                 ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadius.radiusInput),
-                borderSide: BorderSide(color: AppColors.error, width: 1.5.w),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadius.radiusInput),
-                borderSide: BorderSide(color: AppColors.error, width: 1.8.w),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadius.radiusInput),
-                borderSide: BorderSide.none,
               ),
             ),
           ),
         ),
 
         /// 🔴 ERROR
-        if (_errorText != null) ...[
-          SizedBox(height: 6.h),
-          Row(
-            children: [
-              Icon(Icons.error_outline, size: 14.sp, color: AppColors.error),
-              SizedBox(width: 6.h),
-              Expanded(
-                child: Text(
-                  _errorText!,
-                  style: TextStyle(
-                    color: AppColors.error,
-                    fontSize: 10.sp,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+        // if (_errorText != null) ...[
+        //   SizedBox(height: 6.h),
+        //   Row(
+        //     children: [
+        //       Icon(
+        //         Icons.error_outline,
+        //         size: safeSp(14),
+        //         color: AppColors.error,
+        //       ),
+        //       SizedBox(width: 6.h),
+        //       Expanded(
+        //         child: Text(
+        //           _errorText!,
+        //           style: TextStyle(
+        //             color: AppColors.error,
+        //             fontSize: safeSp(10),
+        //             fontWeight: FontWeight.w500,
+        //           ),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ],
       ],
     );
+  }
+}
+
+double safeSp(double size) {
+  try {
+    final val = size.sp;
+
+    if (val.isNaN || val <= 0) return size;
+
+    return val;
+  } catch (e) {
+    return size;
   }
 }

@@ -207,19 +207,57 @@ class MockFitnessPlanRepository implements FitnessPlanRepository {
         ],
       );
     }
-
-    /// 🔥 DEFAULT (for other IDs)
     return FitnessPlanDetail(
       id: int.parse(id),
-      title: "Sample Plan",
-      subtitle: "Basic transformation plan",
+      title: "90 Days Total Transformation",
+      subtitle: "Trainer + Diet Plan + Weekly Check-ins",
       imageUrl:
-          "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800",
-      price: 1999,
-      rating: 4.5,
-      reviewCount: 100,
-      priceNote: "Limited time offer",
+          "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800",
+      badge: "Most Popular",
+      price: 4999,
+      rating: 4.9,
+      reviewCount: 240,
+      priceNote: "One-time payment or EMI options available",
+
+      stats: const [
+        PlanStat(icon: "calendar", label: "12 Weeks"),
+        PlanStat(icon: "live", label: "36 Live Sessions"),
+        PlanStat(icon: "trend", label: "Beginner to Advanced"),
+        PlanStat(icon: "user", label: "1-on-1 Guidance"),
+      ],
+
+      inclusions: const [
+        "Personalized diet chart",
+        "Weekly progress tracking",
+        "Access to recorded sessions",
+        "Live trainer support",
+        "Community group access",
+      ],
+
+      phases: const [
+        ProgramPhase(
+          weekRange: "Week 1-4",
+          title: "Foundation Phase",
+          description:
+              "Build strength, improve mobility, and establish healthy habits.",
+          tagColor: "#42A5F5",
+        ),
+        ProgramPhase(
+          weekRange: "Week 5-8",
+          title: "Fat Burn Phase",
+          description: "Accelerated fat loss & endurance.",
+          tagColor: "#26A69A",
+        ),
+        ProgramPhase(
+          weekRange: "Week 9-12",
+          title: "Strength & Sculpt",
+          description: "Muscle toning & definition.",
+          tagColor: "#7E57C2",
+        ),
+      ],
     );
+
+    /// 🔥 DEFAULT (for other IDs)
   }
 }
 

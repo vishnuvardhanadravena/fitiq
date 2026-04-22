@@ -13,7 +13,7 @@ class Step3Screen extends ConsumerStatefulWidget {
 }
 
 class _Step3ScreenState extends ConsumerState<Step3Screen> {
-  String gender = "Male";
+  String selectedGoal = "Lose Weight";
 
   @override
   Widget build(BuildContext context) {
@@ -37,16 +37,49 @@ class _Step3ScreenState extends ConsumerState<Step3Screen> {
                   "Choose your primary fitness goal — we’ll personalize everything for y",
             ),
             SizedBox(height: sh * 0.01),
-            FitiqTextField(label: 'Full Name', hint: "Enter your name"),
-            SizedBox(height: sh * 0.01),
-            FitiqTextField(label: 'Age', hint: "Enter your Age "),
-            SizedBox(height: sh * 0.01),
             CustomSingleSelect<String>(
-              label: "Gender",
-              items: ["Male", "Female", "Others"],
-              selectedItem: gender,
+              label: "What's Your Goal?",
+              layout: SelectLayout.cards,
+              items: [
+                "Lose Weight",
+                "Gain Muscle",
+                "Stay Fit",
+                "Improve Flexibility",
+              ],
+              selectedItem: selectedGoal,
               onChanged: (val) {
-                setState(() => gender = val);
+                setState(() => selectedGoal = val);
+              },
+
+              labelBuilder: (e) => e,
+              subtitleBuilder: (e) {
+                switch (e) {
+                  case "Lose Weight":
+                    return "Burn fat & reduce weight";
+                  case "Gain Muscle":
+                    return "Build strength & muscle";
+                  case "Stay Fit":
+                    return "Maintain active lifestyle";
+                  case "Improve Flexibility":
+                    return "Yoga & mobility focus";
+                  default:
+                    return "";
+                }
+              },
+
+              iconBuilder: (e) {
+                switch (e) {
+                  case "Lose Weight":
+                    return Icons.local_fire_department;
+                  case "Gain Muscle":
+                    return Icons.fitness_center;
+                  case "Stay Fit":
+                    return Icons.favorite_border;
+                  case "Improve Flexibility":
+                    return Icons.self_improvement;
+                  default:
+                    return Icons.circle;
+                }
               },
             ),
           ],

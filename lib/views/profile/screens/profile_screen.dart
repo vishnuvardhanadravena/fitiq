@@ -1,3 +1,4 @@
+import 'package:fitiq/core/providers/shared_prefs_provider.dart';
 import 'package:fitiq/core/theame/app_text_styles.dart';
 import 'package:fitiq/routes/route_constants.dart';
 import 'package:fitiq/views/profile/widgets/accont_detailes.dart';
@@ -9,17 +10,18 @@ import 'package:fitiq/views/profile/widgets/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:fitiq/views/profile/models/profile_header_data.dart';
 import 'package:fitiq/views/profile/models/accont_navigation_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   XFile? _profileImage; // holds the picked image
 
   Future<void> _showEditProfileSheet(
@@ -31,6 +33,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Colors.transparent,
       builder: (_) => EditProfileSheet(onImagePicked: onImagePicked),
     );
+  }
+
+  Future<void> logout(WidgetRef ref) async {
+    final prefs = ref.read(sharedPrefsProvider);
+    final storage = ref.read(secureStorageProvider);
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    await prefs.clear();
+    await storage.clearAll();
   }
 
   @override
@@ -51,87 +63,148 @@ class _ProfileScreenState extends State<ProfileScreen> {
       gradientColors: [const Color(0xFF5B9BD5), const Color(0xFF1A3A8F)],
     );
 
-    return ProfileHeaderWrapper(
-      data: headerData,
-      showBackButton: false,
-      statsCardBorderRadius: 20,
-      statsCardElevation: 6,
+    return SafeArea(
+      top: false,
 
-      trailingAction: NotificationButton(size: sw * 0.095), 
+      child: ProfileHeaderWrapper(
+        data: headerData,
+        showBackButton: false,
+        statsCardBorderRadius: 20,
+        statsCardElevation: 6,
 
-      // Add this at the top of ProfileScreen state (convert to StatefulWidget)
-      // XFile? _profileImage;
+        trailingAction: NotificationButton(size: sw * 0.095),
 
-      // In your build, update onEditProfile:
-      onEditProfile: () => context.push(RouteList.editProfile),
-      //  _showEditProfileSheet(
-      //   context,
-      //   onImagePicked: (XFile image) {
-      //     setState(() => _profileImage = image);
-      //     debugPrint('Picked image path: ${image.path}');
-      //     // ✅ use _profileImage anywhere — upload to server, show preview, etc.
-      //   },
-      // ),
-      onAvatarTap: () => ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Avatar tapped – open image picker')),
-      ),
-      onStatTap: (index, stat) => ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Stat: \${stat.label}'))),
+        // Add this at the top of ProfileScreen state (convert to StatefulWidget)
+        // XFile? _profileImage;
 
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: sh * 0.045), // space for overlapping stats card
+        // In your build, update onEditProfile:
+        onEditProfile: () => context.push(RouteList.editProfile),
+        //  _showEditProfileSheet(
+        //   context,
+        //   onImagePicked: (XFile image) {
+        //     setState(() => _profileImage = image);
+        //     debugPrint('Picked image path: ${image.path}');
+        //     // ✅ use _profileImage anywhere — upload to server, show preview, etc.
+        //   },
+        // ),
+        onAvatarTap: () => ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Avatar tapped – open image picker')),
+        ),
+        onStatTap: (index, stat) => ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Stat: \${stat.label}'))),
 
-          SectionHeader(title: 'Personal Details', onEdit: () {}, sw: sw),
-          SizedBox(height: sh * 0.01),
-          _InfoCard(
-            sw: sw,
-            sh: sh,
-            items: const [
-              _InfoItem(
-                icon: Icons.email_outlined,
-                label: 'Email',
-                value: 'priya@email.com',
-              ),
-              _InfoItem(
-                icon: Icons.phone_outlined,
-                label: 'Phone',
-                value: '+91 9876543210',
-              ),
-              _InfoItem(
-                icon: Icons.person_outline,
-                label: 'Age',
-                value: '28 Years',
-              ),
-              _InfoItem(
-                icon: Icons.height_outlined,
-                label: 'Height',
-                value: '165 cm',
-              ),
-              _InfoItem(
-                icon: Icons.monitor_weight_outlined,
-                label: 'Weight',
-                value: '62 kg',
-              ),
-            ],
-          ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: sh * 0.045), // space for overlapping stats card
 
-          SizedBox(height: sh * 0.025),
-          SectionHeader(title: 'My Goals', onEdit: () {}, sw: sw),
-          SizedBox(height: sh * 0.01),
-          GoalsCard(sw: sw, sh: sh),
+            SectionHeader(title: 'Personal Details', onEdit: () {}, sw: sw),
+            SizedBox(height: sh * 0.01),
+            _InfoCard(
+              sw: sw,
+              sh: sh,
+              items: const [
+                _InfoItem(
+                  icon: Icons.email_outlined,
+                  label: 'Email',
+                  value: 'priya@email.com',
+                ),
+                _InfoItem(
+                  icon: Icons.phone_outlined,
+                  label: 'Phone',
+                  value: '+91 9876543210',
+                ),
+                _InfoItem(
+                  icon: Icons.person_outline,
+                  label: 'Age',
+                  value: '28 Years',
+                ),
+                _InfoItem(
+                  icon: Icons.height_outlined,
+                  label: 'Height',
+                  value: '165 cm',
+                ),
+                _InfoItem(
+                  icon: Icons.monitor_weight_outlined,
+                  label: 'Weight',
+                  value: '62 kg',
+                ),
+              ],
+            ),
 
-          SizedBox(height: sh * 0.025),
-          SectionHeader(title: 'Account', sw: sw),
-          SizedBox(height: sh * 0.01),
-          AccountCard(items: accountItems, sw: sw, sh: sh),
+            SizedBox(height: sh * 0.025),
+            SectionHeader(title: 'My Goals', onEdit: () {}, sw: sw),
+            SizedBox(height: sh * 0.01),
+            GoalsCard(sw: sw, sh: sh),
 
-          SizedBox(height: sh * 0.02),
-          _LogoutButton(onTap: () {}, sw: sw, sh: sh),
-          SizedBox(height: sh * 0.04),
-        ],
+            SizedBox(height: sh * 0.025),
+            SectionHeader(title: 'Account', sw: sw),
+            SizedBox(height: sh * 0.01),
+            AccountCard(items: accountItems, sw: sw, sh: sh),
+
+            SizedBox(height: sh * 0.02),
+            _LogoutButton(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (dialogContext) {
+                    bool isLoading = false;
+
+                    return StatefulBuilder(
+                      builder: (context, setStateDialog) {
+                        return AlertDialog(
+                          title: const Text('Logout'),
+
+                          content: isLoading
+                              ? Row(
+                                  children: const [
+                                    CircularProgressIndicator(),
+                                    SizedBox(width: 16),
+                                    Text("Logging out..."),
+                                  ],
+                                )
+                              : const Text('Are you sure you want to logout?'),
+
+                          actions: isLoading
+                              ? []
+                              : [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(dialogContext),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      final router = GoRouter.of(context);
+
+                                      setStateDialog(() => isLoading = true);
+
+                                      await logout(ref);
+
+                                      if (!context.mounted) return;
+
+                                      Navigator.pop(
+                                        dialogContext,
+                                      ); // close dialog
+                                      router.go(RouteList.login); // navigate
+                                    },
+                                    child: const Text('Logout'),
+                                  ),
+                                ],
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+              sw: sw,
+              sh: sh,
+            ),
+            SizedBox(height: sh * 0.04),
+          ],
+        ),
       ),
     );
   }

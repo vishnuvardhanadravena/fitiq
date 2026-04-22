@@ -15,28 +15,38 @@ dependencies:
   flutter_screenutil: ^5.9.3
   dio: ^5.9.2
 
-  # ── Riverpod v3 family ────────────────────────────────────────────────────
+  # Riverpod
   flutter_riverpod: ^3.3.1
-  riverpod_annotation: ^4.0.2 # must match riverpod_generator ^4.x
+  riverpod_annotation: ^4.0.2
 
-  # ── Freezed v3 family ─────────────────────────────────────────────────────
-  freezed_annotation: ^3.1.0 # must match freezed ^3.x
+  # Freezed
+  freezed_annotation: ^3.1.0
   json_annotation: ^4.11.0
 
-  # ── Other runtime deps ────────────────────────────────────────────────────
+  # Core
   shared_preferences: ^2.5.5
   go_router: ^17.1.0
   fluttertoast: ^8.1.0
   flutter_launcher_icons: ^0.14.4
   flutter_secure_storage: ^10.0.0
   collection: ^1.19.1
+
+  # UI
   flutter_staggered_grid_view: ^0.7.0
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
+
+  # 🔥 VIDEO (choose ONE stack ideally)
   video_player: ^2.11.1
   better_player_plus: ^1.1.5
+
+  # ✅ MEDIA KIT (FIXED)
   media_kit: ^1.2.6
   media_kit_video: ^2.0.1
+  media_kit_libs_video: ^1.0.7
+  media_kit_libs_android_video: ^1.3.8
+
+  # Other
   image_picker: ^1.2.1
   permission_handler: ^12.0.1
   google_maps_flutter: ^2.17.0
@@ -48,16 +58,16 @@ dependencies:
   custom_info_window: ^1.0.1
   file_picker: ^11.0.2
   dotted_border: ^3.1.0
+  flutter_svg: ^2.2.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  freezed: ^3.2.5 # generates .freezed.dart  (matches freezed_annotation ^3.x)
+  freezed: ^3.2.5
   build_runner: ^2.13.1
-  riverpod_generator: ^4.0.0 # generates .g.dart        (matches riverpod_annotation ^4.x)
-  json_serializable: ^6.8.0 # generates .g.dart        (matches json_annotation ^4.x)
-  media_kit_libs_video: ^1.0.7
-  media_kit_libs_android_video: ^1.3.8
+  riverpod_generator: ^4.0.0
+  json_serializable: ^6.8.0
 
 flutter_icons:
   android: true

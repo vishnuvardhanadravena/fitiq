@@ -81,6 +81,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _startAnimations() async {
+    final router = GoRouter.of(context); // ✅ capture early
+
     await _logoController.forward();
     await Future.delayed(const Duration(milliseconds: 200));
 
@@ -88,7 +90,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 150));
 
     await _taglineController.forward();
-
     await Future.delayed(const Duration(milliseconds: 800));
 
     if (!mounted) return;
@@ -99,12 +100,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final token = await storage.readString('token');
     final isFirstTime = prefs.getBool('isFirstTime') ?? true;
     final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    final isStepsCompleted = prefs.getBool('isStepsCompleted') ?? false;
+
     if (isFirstTime) {
-      context.go(RouteList.login);
-    } else if (token != null && token.isNotEmpty && isLoggedIn == true) {
-      context.go(RouteList.stepscreens);
+      router.go(RouteList.onboarding);
+    } else if (token != null && token.isNotEmpty && isLoggedIn) {
+      if (isStepsCompleted) {
+        router.go(RouteList.home);
+      } else {
+        router.go(RouteList.stepscreens);
+      }
     } else {
-      context.go(RouteList.login);
+      router.go(RouteList.login);
     }
   }
 

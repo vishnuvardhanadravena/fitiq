@@ -1,8 +1,10 @@
 import 'package:fitiq/core/constants/app_assets.dart';
+import 'package:fitiq/core/providers/shared_prefs_provider.dart';
 import 'package:fitiq/core/theame/app_colors.dart';
 import 'package:fitiq/core/widgets/primary_button.dart';
 import 'package:fitiq/routes/route_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
@@ -44,14 +46,14 @@ final List<OnboardingPageData> onboardingPages = [
   ),
 ];
 
-class OnboardingScreen extends StatefulWidget {
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
@@ -64,15 +66,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
-  void _getStarted() {
+  void _getStarted() async {
+    final prefs = ref.read(sharedPrefsProvider);
+    await prefs.setBool('isFirstTime', false);
+    if (!mounted) return;
     context.pushReplacementNamed(RouteList.login);
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   const SnackBar(content: Text('Welcome to FitIQ! 🎉')),
-    // );
   }
 
   void _skip() {
-    _pageController.jumpToPage(onboardingPages.length - 1);
+    context.go(RouteList.login);
   }
 
   @override
@@ -88,7 +90,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // ── PageView (must be unobstructed for swipe) ──────────────
           PageView.builder(
             controller: _pageController,
             itemCount: onboardingPages.length,
@@ -98,7 +99,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             },
           ),
 
-          // ── Skip Button ────────────────────────────────────────────
           SafeArea(
             child: Align(
               alignment: Alignment.topLeft,
@@ -151,8 +151,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
           ),
-
-          // ── Bottom Controls ────────────────────────────────────────
           Positioned(
             left: 0,
             right: 0,
@@ -173,13 +171,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
 class _OnboardingPage extends StatelessWidget {
   final OnboardingPageData data;
-
   const _OnboardingPage({required this.data});
-
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-
     return Stack(
       children: [
         Positioned(

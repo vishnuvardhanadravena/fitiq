@@ -1,3 +1,4 @@
+import 'package:fitiq/core/widgets/exit_bottom_sheet.dart';
 import 'package:fitiq/views/dashborad/provider/dashbordprovider.dart';
 import 'package:fitiq/views/profile/screens/profile_screen.dart';
 import 'package:fitiq/views/dashborad/screens/programs_screen.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -196,37 +198,60 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(dashboardIndexProvider);
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        backgroundColor: FitiqTheme.background,
-        extendBody: true,
-        body: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          switchInCurve: Curves.easeOutCubic,
-          switchOutCurve: Curves.easeInCubic,
-          transitionBuilder: (child, animation) => FadeTransition(
-            opacity: animation,
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, 0.025),
-                end: Offset.zero,
-              ).animate(animation),
-              child: child,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        if (currentIndex != 0) {
+          ref.read(dashboardIndexProvider.notifier).state = 0; 
+          return;
+        }
+        await showExitBottomSheet(
+          context: context,
+          // imageAsset: "assets/exist2.svg",
+          imageUrl:
+              "https://img.freepik.com/premium-vector/photo-vector-illustration-happy-face-sad-face-funny-face-expression-with-tears_763111-106679.jpg?semt=ais_hybrid&w=740&q=80",
+          // "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCcXdVOFYRpH-Bd1WV50YDFftBhPvff3oqXQ&s",
+
+          // imageUrl:
+          //     "https://market-resized.envatousercontent.com/previews/files/345160807/preview.jpg?w=590&h=590&cf_fit=crop&crop=top&format=auto&q=85&s=6a6a5e559fc499ffad80b0fcfdc6fe4b5058fd68891cc7f6b592b65d37542acf",
+        );
+        // if (shouldExit == true) {
+        //   SystemNavigator.pop();
+        // }
+      },
+      child: SafeArea(
+        top: false,
+        child: Scaffold(
+          backgroundColor: FitiqTheme.background,
+          extendBody: true,
+          body: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            transitionBuilder: (child, animation) => FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 0.025),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              ),
+            ),
+            child: KeyedSubtree(
+              key: ValueKey(currentIndex),
+              // Guard against index mismatch if pages list is shorter than navItems
+              child: _pages[currentIndex.clamp(0, _pages.length - 1)],
             ),
           ),
-          child: KeyedSubtree(
-            key: ValueKey(currentIndex),
-            // Guard against index mismatch if pages list is shorter than navItems
-            child: _pages[currentIndex.clamp(0, _pages.length - 1)],
+          bottomNavigationBar: _BottomNavBar(
+            currentIndex: currentIndex,
+            onTap: (index) {
+              HapticFeedback.selectionClick();
+              ref.read(dashboardIndexProvider.notifier).state = index;
+            },
           ),
-        ),
-        bottomNavigationBar: _BottomNavBar(
-          currentIndex: currentIndex,
-          onTap: (index) {
-            HapticFeedback.selectionClick();
-            ref.read(dashboardIndexProvider.notifier).state = index;
-          },
         ),
       ),
     );

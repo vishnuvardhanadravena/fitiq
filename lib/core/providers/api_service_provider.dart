@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dio_provider.dart';
 import '../storage/token_storage.dart';
 
-final apiServiceProvider = Provider<ApiService>((ref) {
+final   apiServiceProvider = Provider<ApiService>((ref) {
   final dio = ref.watch(dioProvider);
   return ApiService(dio);
 });
